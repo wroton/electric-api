@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Database</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{137a8df6-5a4a-4d6e-a79e-aca0e006cf4c}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Database</RootNamespace>
+    <AssemblyName>Database</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Schema" />
+    <Folder Include="Security" />
+    <Folder Include="Deployment" />
+    <Folder Include="Deployment\Post" />
+    <Folder Include="Deployment\Pre" />
+    <Folder Include="Schema\Deployment" />
+    <Folder Include="Schema\Deployment\Tables" />
+    <Folder Include="Schema\Deployment\Functions" />
+    <Folder Include="Schema\Job" />
+    <Folder Include="Schema\Job\Tables" />
+    <Folder Include="Schema\Job\Procedures" />
+    <Folder Include="Schema\Job\Views" />
+    <Folder Include="Schema\Technician" />
+    <Folder Include="Schema\Technician\Tables" />
+    <Folder Include="Schema\Technician\Views" />
+    <Folder Include="Schema\Technician\Procedures" />
+    <Folder Include="Schema\User" />
+    <Folder Include="Schema\User\Tables" />
+    <Folder Include="Schema\User\Procedures" />
+    <Folder Include="Schema\User\Views" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="Deployment\Pre\Run.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Deployment\Post\Run.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Schema\Schemas.sql" />
+    <Build Include="Security\Logins.sql" />
+    <Build Include="Security\Users.sql" />
+    <Build Include="Schema\Job\Tables\Jobs.sql" />
+    <Build Include="Schema\Job\Views\vJobs.sql" />
+    <Build Include="Schema\Job\Procedures\Job_Create.sql" />
+    <Build Include="Schema\Job\Procedures\Job_Update.sql" />
+    <Build Include="Schema\Job\Procedures\Jobs_Resolve.sql" />
+    <Build Include="Schema\Job\Procedures\Job_Delete.sql" />
+    <Build Include="Schema\Technician\Tables\Technicians.sql" />
+    <Build Include="Schema\User\Tables\Users.sql" />
+    <Build Include="Schema\Technician\Procedures\Technician_Create.sql" />
+    <Build Include="Schema\Technician\Procedures\Technician_Delete.sql" />
+    <Build Include="Schema\Technician\Procedures\Technician_Update.sql" />
+    <Build Include="Schema\Technician\Procedures\Technicians_Resolve.sql" />
+    <Build Include="Schema\Technician\Views\vTechnicians.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Database.publish.xml" />
+  </ItemGroup>
+</Project>
