@@ -1,70 +1,80 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace Service.Server.Entities
+namespace Service.Server.Models
 {
     /// <summary>
     /// A job to be worked.
     /// </summary>
-    public sealed class JobEntity
+    public sealed class Job
     {
         /// <summary>
         /// Id of the job.
         /// </summary>
-        public int Id { get; private set; }
+        public int? Id { get; set; }
 
         /// <summary>
         /// Title of the job.
         /// </summary>
-        public string Title { get; private set; }
+        [Required]
+        [MaxLength(200)]
+        public string Title { get; set; }
 
         /// <summary>
         /// Date and time that the job is scheduled to start.
         /// </summary>
-        public DateTime StartTime { get; private set; }
+        [Required]
+        public DateTime StartTime { get; set; }
 
         /// <summary>
         /// Date and time that the job is scheduled to end.
         /// </summary>
-        public DateTime EndTime { get; private set; }
+        [Required]
+        public DateTime EndTime { get; set; }
 
         /// <summary>
         /// Description of the job.
         /// </summary>
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Can technicians assign themselves to the job.
         /// </summary>
-        public bool OpenAssignment { get; private set; }
+        [Required]
+        public bool OpenAssignment { get; set; }
 
         /// <summary>
         /// Id of the business that owns the job.
         /// </summary>
-        public int BusinessId { get; private set; }
+        public int BusinessId { get; set; }
 
         /// <summary>
         /// Name of the business that owns the job.
         /// </summary>
-        public string BusinessName { get; private set; }
+        [MaxLength(200)]
+        public string BusinessName { get; set; }
 
         /// <summary>
         /// Id of the client that requested the job be created.
         /// </summary>
-        public int ClientId { get; private set; }
+        [Required]
+        public int ClientId { get; set; }
 
         /// <summary>
         /// Name of the client that requested the job be created.
         /// </summary>
-        public string ClientName { get; private set; }
+        [MaxLength(200)]
+        public string ClientName { get; set; }
 
         /// <summary>
         /// Id of the technician to whom the job is assigned.
         /// </summary>
-        public int? TechnicianId { get; private set; }
+        public int? TechnicianId { get; set; }
 
         /// <summary>
         /// Name of the technician to whom the job is assigned.
         /// </summary>
-        public string TechnicianName { get; private set; }
+        [MaxLength(100)]
+        public string TechnicianName { get; set; }
     }
 }

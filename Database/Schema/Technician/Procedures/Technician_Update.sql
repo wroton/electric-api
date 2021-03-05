@@ -1,15 +1,13 @@
 ﻿CREATE PROCEDURE Technician.Technician_Update
 	@Id INT,
-	@FirstName NVARCHAR(50),
-	@LastName NVARCHAR(50),
+	@Name NVARCHAR(100),
 	@UserId INT
 AS
 
 UPDATE
 	Technician.Technicians
 SET
-	FirstName = @FirstName,
-	LastName = @LastName,
+	[Name] = @Name,
 	UserId = @UserId
 WHERE
 	Id = @Id;

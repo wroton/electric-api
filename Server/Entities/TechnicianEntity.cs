@@ -11,14 +11,9 @@
         public int Id { get; private set; }
 
         /// <summary>
-        /// First name of the technician.
+        /// Name of the technician.
         /// </summary>
-        public string FirstName { get; private set; }
-
-        /// <summary>
-        /// Last name of the technician.
-        /// </summary>
-        public string LastName { get; private set; }
+        public string Name { get; private set; }
 
         /// <summary>
         /// Id of the user record associated with this technician.

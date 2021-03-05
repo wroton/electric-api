@@ -1,13 +1,12 @@
 ﻿CREATE PROCEDURE Technician.Technician_Create
-	@FirstName NVARCHAR(50),
-	@LastName NVARCHAR(50),
+	@Name NVARCHAR(100),
 	@UserId INT
 AS
 
 INSERT INTO Technician.Technicians
-	(FirstName, LastName, UserId)
+	([Name], UserId)
 VALUES
-	(@FirstName, @LastName, @UserId)
+	(@Name, @UserId);
 
 SELECT
 	*

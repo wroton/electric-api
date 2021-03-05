@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Service.Server.DTOs
+namespace Service.Server.Models
 {
     /// <summary>
     /// A technician who works jobs in the field.
@@ -13,16 +13,11 @@ namespace Service.Server.DTOs
         public int? Id { get; set; }
 
         /// <summary>
-        /// First name of the technician.
+        /// Name of the technician.
         /// </summary>
         [Required]
-        public string FirstName { get; set; }
-
-        /// <summary>
-        /// Last name of the technician.
-        /// </summary>
-        [Required]
-        public string LastName { get; set; }
+        [MaxLength(100)]
+        public string Name { get; set; }
 
         /// <summary>
         /// Id of the user record associated with this technician.

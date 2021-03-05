@@ -6,8 +6,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Service.Server.DTOs;
 using Service.Server.Entities;
+using Service.Server.Models;
 using Service.Server.Services.Interfaces;
 
 namespace Service.Server.Controllers
@@ -107,7 +107,11 @@ namespace Service.Server.Controllers
             }
 
             const string storedProcedure = "Technician.Technician_Create";
-            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(storedProcedure, new { technician.FirstName, technician.LastName, technician.UserId }, commandType: CommandType.StoredProcedure);
+            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(storedProcedure, new
+            {
+                technician.Name,
+                technician.UserId
+            }, commandType: CommandType.StoredProcedure);
             var createdTechnician = MapFromDB(dbTechnicians.FirstOrDefault());
             return Ok(createdTechnician);
         }
@@ -140,7 +144,12 @@ namespace Service.Server.Controllers
             }
 
             const string storedProcedure = "Technician.Technician_Update";
-            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(storedProcedure, new { technician.Id, technician.FirstName, technician.LastName, technician.UserId }, commandType: CommandType.StoredProcedure);
+            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(storedProcedure, new
+            {
+                technician.Id,
+                technician.Name,
+                technician.UserId
+            }, commandType: CommandType.StoredProcedure);
             var updatedTechnician = MapFromDB(dbTechnicians.FirstOrDefault());
             return Ok(updatedTechnician);
         }
@@ -187,8 +196,7 @@ namespace Service.Server.Controllers
         private Technician MapFromDB(TechnicianEntity technician) => technician == null ? null : new Technician
         {
             Id = technician.Id,
-            FirstName = technician.FirstName,
-            LastName = technician.LastName,
+            Name = technician.Name,
             UserId = technician.UserId
         };
     }

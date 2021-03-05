@@ -2,11 +2,12 @@
 AS
 
 SELECT
-	Id,
-	FirstName,
-	LastName,
-	FullName,
+	t.Id,
+	t.[Name],
 	UserId
 FROM
-	Technician.Technicians;
+	Technician.Technicians AS t;
+GO
+
+GRANT SELECT ON Technician.vTechnicians TO [Service];
 GO

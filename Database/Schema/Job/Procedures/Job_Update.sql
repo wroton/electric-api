@@ -2,7 +2,12 @@
 	@Id INT,
 	@Title NVARCHAR(200),
 	@StartTime DATETIME2(0),
-	@EndTime DATETIME2(0)
+	@EndTime DATETIME2(0),
+	@Estimate DECIMAL(9, 2),
+	@OpenAssignment BIT,
+	@Description NVARCHAR(MAX),
+	@ClientId INT,
+	@TechnicianId INT
 AS
 
 UPDATE
@@ -10,7 +15,12 @@ UPDATE
 SET
 	Title = @Title,
 	StartTime = @StartTime,
-	EndTime = @EndTime
+	EndTime = @EndTime,
+	Estimate = @Estimate,
+	OpenAssignment = @OpenAssignment,
+	[Description] = @Description,
+	ClientId = @ClientId,
+	TechnicianId = @TechnicianId
 WHERE
 	Id = @Id;
 

@@ -6,8 +6,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Service.Server.DTOs;
 using Service.Server.Entities;
+using Service.Server.Models;
 using Service.Server.Services.Interfaces;
 
 namespace Service.Server.Controllers

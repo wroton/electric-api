@@ -64,10 +64,6 @@
     <Folder Include="Schema\Deployment" />
     <Folder Include="Schema\Deployment\Tables" />
     <Folder Include="Schema\Deployment\Functions" />
-    <Folder Include="Schema\Job" />
-    <Folder Include="Schema\Job\Tables" />
-    <Folder Include="Schema\Job\Procedures" />
-    <Folder Include="Schema\Job\Views" />
     <Folder Include="Schema\Technician" />
     <Folder Include="Schema\Technician\Tables" />
     <Folder Include="Schema\Technician\Views" />
@@ -76,6 +72,18 @@
     <Folder Include="Schema\User\Tables" />
     <Folder Include="Schema\User\Procedures" />
     <Folder Include="Schema\User\Views" />
+    <Folder Include="Schema\Client" />
+    <Folder Include="Schema\Client\Procedures" />
+    <Folder Include="Schema\Client\Tables" />
+    <Folder Include="Schema\Client\Views" />
+    <Folder Include="Schema\Business" />
+    <Folder Include="Schema\Business\Tables" />
+    <Folder Include="Schema\Business\Views" />
+    <Folder Include="Schema\Business\Procedures" />
+    <Folder Include="Schema\Job" />
+    <Folder Include="Schema\Job\Procedures" />
+    <Folder Include="Schema\Job\Tables" />
+    <Folder Include="Schema\Job\Views" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Deployment\Pre\Run.sql" />
@@ -87,12 +95,6 @@
     <Build Include="Schema\Schemas.sql" />
     <Build Include="Security\Logins.sql" />
     <Build Include="Security\Users.sql" />
-    <Build Include="Schema\Job\Tables\Jobs.sql" />
-    <Build Include="Schema\Job\Views\vJobs.sql" />
-    <Build Include="Schema\Job\Procedures\Job_Create.sql" />
-    <Build Include="Schema\Job\Procedures\Job_Update.sql" />
-    <Build Include="Schema\Job\Procedures\Jobs_Resolve.sql" />
-    <Build Include="Schema\Job\Procedures\Job_Delete.sql" />
     <Build Include="Schema\Technician\Tables\Technicians.sql" />
     <Build Include="Schema\User\Tables\Users.sql" />
     <Build Include="Schema\Technician\Procedures\Technician_Create.sql" />
@@ -100,6 +102,30 @@
     <Build Include="Schema\Technician\Procedures\Technician_Update.sql" />
     <Build Include="Schema\Technician\Procedures\Technicians_Resolve.sql" />
     <Build Include="Schema\Technician\Views\vTechnicians.sql" />
+    <Build Include="Schema\Client\Tables\Clients.sql" />
+    <Build Include="Schema\Technician\Tables\Positions.sql" />
+    <Build Include="Schema\Business\Tables\Businesses.sql" />
+    <Build Include="Schema\Job\Procedures\Job_Create.sql" />
+    <Build Include="Schema\Job\Procedures\Job_Delete.sql" />
+    <Build Include="Schema\Job\Procedures\Job_Update.sql" />
+    <Build Include="Schema\Job\Procedures\Jobs_Resolve.sql" />
+    <Build Include="Schema\Job\Tables\Jobs.sql" />
+    <Build Include="Schema\Job\Views\vJobs.sql" />
+    <Build Include="Schema\Technician\Views\vPositions.sql" />
+    <Build Include="Schema\Business\Views\vBusinesses.sql" />
+    <Build Include="Schema\Business\Procedures\Business_Create.sql" />
+    <Build Include="Schema\Business\Procedures\Business_Delete.sql" />
+    <Build Include="Schema\Business\Procedures\Business_Update.sql" />
+    <Build Include="Schema\Business\Procedures\Businesses_Resolve.sql" />
+    <Build Include="Schema\Client\Procedures\Client_Create.sql" />
+    <Build Include="Schema\Client\Procedures\Client_Delete.sql" />
+    <Build Include="Schema\Client\Procedures\Client_Update.sql" />
+    <Build Include="Schema\Client\Procedures\Clients_Resolve.sql" />
+    <Build Include="Schema\Client\Views\vClients.sql" />
+    <Build Include="Schema\Technician\Procedures\Position_Create.sql" />
+    <Build Include="Schema\Technician\Procedures\Position_Delete.sql" />
+    <Build Include="Schema\Technician\Procedures\Position_Update.sql" />
+    <Build Include="Schema\Technician\Procedures\Positions_Resolve.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />
