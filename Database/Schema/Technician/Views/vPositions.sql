@@ -3,7 +3,8 @@ AS
 
 SELECT
 	Id,
-	[Name]
+	[Name],
+	BusinessId
 FROM
 	Technician.Positions;
 GO

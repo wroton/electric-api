@@ -8,6 +8,13 @@ namespace Service.Server.Configuration
     public sealed class ServiceSettings
     {
         /// <summary>
+        /// Key used to sign JWT tokens.
+        /// </summary>
+        [Required]
+        [MinLength(16)]
+        public byte[] JwtKey { get; set; }
+
+        /// <summary>
         /// Connection string used to connect to the Service database.
         /// </summary>
         [Required]

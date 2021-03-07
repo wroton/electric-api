@@ -10,7 +10,7 @@ namespace Service.Server.Models
         /// <summary>
         /// Id of the position.
         /// </summary>
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         /// <summary>
         /// Name of the position.
@@ -18,5 +18,10 @@ namespace Service.Server.Models
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Id of the business that created this position.
+        /// </summary>
+        public int? BusinessId { get; set; }
     }
 }

@@ -14,5 +14,10 @@
         /// Name of the position.
         /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// Id of the business that created the technician position.
+        /// </summary>
+        public int BusinessId { get; private set; }
     }
 }

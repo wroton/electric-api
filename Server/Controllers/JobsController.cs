@@ -1,12 +1,9 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Service.Server.Entities;
 using Service.Server.Models;
 using Service.Server.Services.Interfaces;
 
@@ -18,20 +15,15 @@ namespace Service.Server.Controllers
     [Route("api/1/jobs")]
     public class JobsController : BaseController
     {
-        private readonly IDbConnection _connection;
+        private readonly IJobService _jobService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobsController" /> class.
         /// </summary>
-        /// <param name="connectionFactory">Database connection factory to use.</param>
-        public JobsController(IDbConnectionFactory connectionFactory)
+        /// <param name="jobService">Job service to use.</param>
+        public JobsController(IJobService jobService)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            _connection = connectionFactory.Build();
+            _jobService = jobService ?? throw new ArgumentNullException(nameof(jobService));
         }
 
         /// <summary>
@@ -42,9 +34,8 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<int>), 200)]
         public async Task<IActionResult> List()
         {
-            const string sql = "SELECT Id FROM Job.vJobs";
-            var dbIds = await _connection.QueryAsync<int>(sql);
-            return Ok(dbIds);
+            var ids = await _jobService.List();
+            return Ok(ids);
         }
 
         /// <summary>
@@ -62,11 +53,7 @@ namespace Service.Server.Controllers
                 return Ok(Array.Empty<Job>());
             }
 
-            var splitIds = string.Join(',', ids);
-
-            const string storedProcedure = "Job.Jobs_Resolve";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
-            var jobs = dbJobs.Select(MapFromDB);
+            var jobs = await _jobService.Resolve(ids);
             return Ok(jobs);
         }
 
@@ -81,14 +68,13 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            var dbJob = await GetJobById(id);
-            if (dbJob == null)
+            var client = await _jobService.Get(id);
+            if (client == null)
             {
                 return NotFound("Job could not be found.");
             }
 
-            var job = MapFromDB(dbJob);
-            return Ok(job);
+            return Ok(client);
         }
 
         /// <summary>
@@ -106,9 +92,7 @@ namespace Service.Server.Controllers
                 return BadRequest("Job was not provided in the body or could not be interpreted as JSON.");
             }
 
-            const string storedProcedure = "Job.Job_Create";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(storedProcedure, new { job.Title, job.StartTime, job.EndTime }, commandType: CommandType.StoredProcedure);
-            var createdJob = MapFromDB(dbJobs.FirstOrDefault());
+            var createdJob = await _jobService.Create(job);
             return Ok(createdJob);
         }
 
@@ -133,15 +117,12 @@ namespace Service.Server.Controllers
                 return BadRequest("Job id must be provided.");
             }
 
-            var dbJob = await GetJobById(job.Id.Value);
-            if (dbJob == null)
+            var updatedJob = await _jobService.Update(job);
+            if (updatedJob == null)
             {
                 return NotFound("Job could not be found.");
             }
 
-            const string storedProcedure = "Job.Job_Update";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(storedProcedure, new { job.Id, job.Title, job.StartTime, job.EndTime }, commandType: CommandType.StoredProcedure);
-            var updatedJob = MapFromDB(dbJobs.FirstOrDefault());
             return Ok(updatedJob);
         }
 
@@ -156,40 +137,15 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var dbJob = await GetJobById(id);
-            if (dbJob == null)
+            var job = await _jobService.Get(id);
+            if (job == null)
             {
                 return NotFound("Job could not be found.");
             }
 
-            const string storedProcedure = "Job.Job_Delete";
-            await _connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
-            return Ok();
-        }
+            await _jobService.Delete(id);
 
-        /// <summary>
-        /// Gets a job by its id.
-        /// </summary>
-        /// <param name="id">Id of the job to get.</param>
-        /// <returns>Job with the given id.</returns>
-        private async Task<JobEntity> GetJobById(int id)
-        {
-            const string sql = "SELECT * FROM Job.vJobs WHERE Id = @id";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(sql, new { id });
-            return dbJobs.FirstOrDefault();
+            return NoContent();
         }
-
-        /// <summary>
-        /// Maps a job from the database to its associated DTO.
-        /// </summary>
-        /// <param name="job">Job to map.</param>
-        /// <returns>Mapped job.</returns>
-        private Job MapFromDB(JobEntity job) => job == null ? null : new Job
-        {
-            Id = job.Id,
-            Title = job.Title,
-            StartTime = job.StartTime,
-            EndTime = job.EndTime
-        };
     }
 }

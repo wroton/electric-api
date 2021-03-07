@@ -126,6 +126,11 @@
     <Build Include="Schema\Technician\Procedures\Position_Delete.sql" />
     <Build Include="Schema\Technician\Procedures\Position_Update.sql" />
     <Build Include="Schema\Technician\Procedures\Positions_Resolve.sql" />
+    <Build Include="Schema\User\Views\vUsers.sql" />
+    <Build Include="Schema\User\Procedures\User_Create.sql" />
+    <Build Include="Schema\User\Procedures\User_Resolve.sql" />
+    <Build Include="Schema\User\Procedures\User_Update.sql" />
+    <Build Include="Schema\User\Procedures\User_Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

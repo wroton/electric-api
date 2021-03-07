@@ -10,7 +10,7 @@ namespace Service.Server.Models
         /// <summary>
         /// Unique id of the client.
         /// </summary>
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         /// <summary>
         /// Name of the client.

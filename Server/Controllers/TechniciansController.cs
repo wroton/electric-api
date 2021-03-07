@@ -1,12 +1,9 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Service.Server.Entities;
 using Service.Server.Models;
 using Service.Server.Services.Interfaces;
 
@@ -18,20 +15,15 @@ namespace Service.Server.Controllers
     [Route("api/1/technicians")]
     public class TechniciansController : BaseController
     {
-        private readonly IDbConnection _connection;
+        private readonly ITechnicianService _technicianService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TechniciansController" /> class.
         /// </summary>
-        /// <param name="connectionFactory">Database connection factory to use.</param>
-        public TechniciansController(IDbConnectionFactory connectionFactory)
+        /// <param name="technicianService">Technician service to use.</param>
+        public TechniciansController(ITechnicianService technicianService)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            _connection = connectionFactory.Build();
+            _technicianService = technicianService ?? throw new ArgumentNullException(nameof(technicianService));
         }
 
         /// <summary>
@@ -42,9 +34,8 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<int>), 200)]
         public async Task<IActionResult> List()
         {
-            const string sql = "SELECT Id FROM Technician.vTechnicians";
-            var dbIds = await _connection.QueryAsync<int>(sql);
-            return Ok(dbIds);
+            var ids = await _technicianService.List();
+            return Ok(ids);
         }
 
         /// <summary>
@@ -62,11 +53,7 @@ namespace Service.Server.Controllers
                 return Ok(Array.Empty<Technician>());
             }
 
-            var splitIds = string.Join(',', ids);
-
-            const string storedProcedure = "Technician.Technicians_Resolve";
-            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
-            var technicians = dbTechnicians.Select(MapFromDB);
+            var technicians = await _technicianService.Resolve(ids);
             return Ok(technicians);
         }
 
@@ -81,13 +68,12 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            var dbTechnician = await GetTechnicianById(id);
-            if (dbTechnician == null)
+            var technician = await _technicianService.Get(id);
+            if (technician == null)
             {
-                return NotFound("Technician could not be found.");
+                return NotFound("Tecnician could not be found.");
             }
 
-            var technician = MapFromDB(dbTechnician);
             return Ok(technician);
         }
 
@@ -106,13 +92,7 @@ namespace Service.Server.Controllers
                 return BadRequest("Technician was not provided in the body or could not be interpreted as JSON.");
             }
 
-            const string storedProcedure = "Technician.Technician_Create";
-            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(storedProcedure, new
-            {
-                technician.Name,
-                technician.UserId
-            }, commandType: CommandType.StoredProcedure);
-            var createdTechnician = MapFromDB(dbTechnicians.FirstOrDefault());
+            var createdTechnician = await _technicianService.Create(technician);
             return Ok(createdTechnician);
         }
 
@@ -137,20 +117,12 @@ namespace Service.Server.Controllers
                 return BadRequest("Technician id must be provided.");
             }
 
-            var dbTechnician = await GetTechnicianById(technician.Id.Value);
-            if (dbTechnician == null)
+            var updatedTechnician = await _technicianService.Update(technician);
+            if (updatedTechnician == null)
             {
                 return NotFound("Technician could not be found.");
             }
 
-            const string storedProcedure = "Technician.Technician_Update";
-            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(storedProcedure, new
-            {
-                technician.Id,
-                technician.Name,
-                technician.UserId
-            }, commandType: CommandType.StoredProcedure);
-            var updatedTechnician = MapFromDB(dbTechnicians.FirstOrDefault());
             return Ok(updatedTechnician);
         }
 
@@ -165,39 +137,15 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var dbTechnician = await GetTechnicianById(id);
-            if (dbTechnician == null)
+            var technician = await _technicianService.Get(id);
+            if (technician == null)
             {
                 return NotFound("Technician could not be found.");
             }
 
-            const string storedProcedure = "Technician.Technician_Delete";
-            await _connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
-            return Ok();
-        }
+            await _technicianService.Delete(id);
 
-        /// <summary>
-        /// Gets a technician by its id.
-        /// </summary>
-        /// <param name="id">Id of the technician to get.</param>
-        /// <returns>Technician with the given id.</returns>
-        private async Task<TechnicianEntity> GetTechnicianById(int id)
-        {
-            const string sql = "SELECT * FROM Technician.vTechnicians WHERE Id = @id";
-            var dbTechnicians = await _connection.QueryAsync<TechnicianEntity>(sql, new { id });
-            return dbTechnicians.FirstOrDefault();
+            return NoContent();
         }
-
-        /// <summary>
-        /// Maps a technician from the database to its associated DTO.
-        /// </summary>
-        /// <param name="technician">Technician to map.</param>
-        /// <returns>Mapped technician.</returns>
-        private Technician MapFromDB(TechnicianEntity technician) => technician == null ? null : new Technician
-        {
-            Id = technician.Id,
-            Name = technician.Name,
-            UserId = technician.UserId
-        };
     }
 }

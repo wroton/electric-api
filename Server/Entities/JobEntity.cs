@@ -28,6 +28,11 @@ namespace Service.Server.Entities
         public DateTime EndTime { get; private set; }
 
         /// <summary>
+        /// Estimated cost of the work for the job.
+        /// </summary>
+        public decimal Estimate { get; private set; }
+
+        /// <summary>
         /// Description of the job.
         /// </summary>
         public string Description { get; private set; }

@@ -1,12 +1,9 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Service.Server.Entities;
 using Service.Server.Models;
 using Service.Server.Services.Interfaces;
 
@@ -18,20 +15,15 @@ namespace Service.Server.Controllers
     [Route("api/1/businesses")]
     public class BusinessesController : BaseController
     {
-        private readonly IDbConnection _connection;
+        private readonly IBusinessService _businessService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BusinessesController" /> class.
         /// </summary>
-        /// <param name="connectionFactory">Database connection factory to use.</param>
-        public BusinessesController(IDbConnectionFactory connectionFactory)
+        /// <param name="businessService">Business service to use.</param>
+        public BusinessesController(IBusinessService businessService)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            _connection = connectionFactory.Build();
+            _businessService = businessService ?? throw new ArgumentNullException(nameof(businessService));
         }
 
         /// <summary>
@@ -42,9 +34,8 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<int>), 200)]
         public async Task<IActionResult> List()
         {
-            const string sql = "SELECT Id FROM Business.vBusinesses";
-            var dbIds = await _connection.QueryAsync<int>(sql);
-            return Ok(dbIds);
+            var ids = await _businessService.List();
+            return Ok(ids);
         }
 
         /// <summary>
@@ -62,12 +53,8 @@ namespace Service.Server.Controllers
                 return Ok(Array.Empty<Business>());
             }
 
-            var splitIds = string.Join(',', ids);
-
-            const string storedProcedure = "Business.Businesses_Resolve";
-            var dbBusinesss = await _connection.QueryAsync<BusinessEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
-            var businesss = dbBusinesss.Select(MapFromDB);
-            return Ok(businesss);
+            var businesses = await _businessService.Resolve(ids);
+            return Ok(businesses);
         }
 
         /// <summary>
@@ -81,13 +68,12 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            var dbBusiness = await GetBusinessById(id);
-            if (dbBusiness == null)
+            var business = await _businessService.Get(id);
+            if (business == null)
             {
                 return NotFound("Business could not be found.");
             }
 
-            var business = MapFromDB(dbBusiness);
             return Ok(business);
         }
 
@@ -106,17 +92,7 @@ namespace Service.Server.Controllers
                 return BadRequest("Business was not provided in the body or could not be interpreted as JSON.");
             }
 
-            const string storedProcedure = "Business.Business_Create";
-            var dbBusinesses = await _connection.QueryAsync<BusinessEntity>(storedProcedure, new
-            {
-                business.Name,
-                business.AddressLine1,
-                business.AddressLine2,
-                business.City,
-                business.State,
-                business.ZipCode
-            }, commandType: CommandType.StoredProcedure);
-            var createdBusiness = MapFromDB(dbBusinesses.FirstOrDefault());
+            var createdBusiness = await _businessService.Create(business);
             return Ok(createdBusiness);
         }
 
@@ -141,24 +117,12 @@ namespace Service.Server.Controllers
                 return BadRequest("Business id must be provided.");
             }
 
-            var dbBusiness = await GetBusinessById(business.Id.Value);
-            if (dbBusiness == null)
+            var updatedBusiness = await _businessService.Update(business);
+            if (updatedBusiness == null)
             {
-                return NotFound("Buisness could not be found.");
+                return NotFound("Business could not be found.");
             }
 
-            const string storedProcedure = "Business.Business_Update";
-            var dbBusinesses = await _connection.QueryAsync<BusinessEntity>(storedProcedure, new
-            {
-                business.Id,
-                business.Name,
-                business.AddressLine1,
-                business.AddressLine2,
-                business.City,
-                business.State,
-                business.ZipCode
-            }, commandType: CommandType.StoredProcedure);
-            var updatedBusiness = MapFromDB(dbBusinesses.FirstOrDefault());
             return Ok(updatedBusiness);
         }
 
@@ -173,43 +137,15 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var dbBusiness = await GetBusinessById(id);
-            if (dbBusiness == null)
+            var business = await _businessService.Get(id);
+            if (business == null)
             {
                 return NotFound("Business could not be found.");
             }
 
-            const string storedProcedure = "Business.Business_Delete";
-            await _connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
-            return Ok();
-        }
+            await _businessService.Delete(id);
 
-        /// <summary>
-        /// Gets a business by its id.
-        /// </summary>
-        /// <param name="id">Id of the business to get.</param>
-        /// <returns>Business with the given id.</returns>
-        private async Task<BusinessEntity> GetBusinessById(int id)
-        {
-            const string sql = "SELECT * FROM Business.vBusinesss WHERE Id = @id";
-            var dbBusinesss = await _connection.QueryAsync<BusinessEntity>(sql, new { id });
-            return dbBusinesss.FirstOrDefault();
+            return NoContent();
         }
-
-        /// <summary>
-        /// Maps a business from the database to its associated DTO.
-        /// </summary>
-        /// <param name="business">Business to map.</param>
-        /// <returns>Mapped business.</returns>
-        private Business MapFromDB(BusinessEntity business) => business == null ? null : new Business
-        {
-            Id = business.Id,
-            Name = business.Name,
-            AddressLine1 = business.AddressLine1,
-            AddressLine2 = business.AddressLine2,
-            City = business.City,
-            State = business.State,
-            ZipCode = business.ZipCode
-        };
     }
 }

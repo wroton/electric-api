@@ -5,9 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Text.Json.Serialization;
 
 using Service.Server.Services.Implementations;
 using Service.Server.Services.Interfaces;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Service.Server.Configuration
 {
@@ -37,14 +41,28 @@ namespace Service.Server.Configuration
             services.Configure<ServiceSettings>(_configuration.GetSection("Settings"));
 
             // Tranient services.
+            services.AddTransient<IBusinessService, BusinessService>();
+            services.AddTransient<IClientService, ClientService>();
             services.AddTransient<IDbConnectionFactory, DbConnectionFactory>();
+            services.AddTransient<IHashService, HashService>();
+            services.AddTransient<IJobService, JobService>();
+            services.AddTransient<IJwtService, JwtService>();
+            services.AddTransient<ITechnicianPositionService, TechnicianPositionService>();
+            services.AddTransient<ITechnicianService, TechnicianService>();
+            services.AddTransient<IUserService, UserService>();
 
             // Setup API requirements.
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(jsonOptions =>
+            {
+                jsonOptions.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Server", Version = "v1" });
             });
+
+            // Add jwt authentication.
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
         }
 
         /// <summary>
@@ -62,9 +80,19 @@ namespace Service.Server.Configuration
                 applicationBuilder.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Server v1"));
             }
 
+            // Enable CORS.
+            applicationBuilder.UseCors(policy =>
+            {
+                policy.AllowAnyOrigin();
+                policy.AllowAnyMethod();
+                policy.AllowAnyHeader();
+            });
+
             // Setup settings for all environments.
             applicationBuilder.UseHttpsRedirection();
             applicationBuilder.UseRouting();
+            applicationBuilder.UseMiddleware<AuthorizationMiddleware>();
+            applicationBuilder.UseAuthentication();
             applicationBuilder.UseAuthorization();
             applicationBuilder.UseEndpoints(endpoints =>
             {

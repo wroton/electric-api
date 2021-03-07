@@ -33,6 +33,12 @@ namespace Service.Server.Models
         public DateTime EndTime { get; set; }
 
         /// <summary>
+        /// Estimated cost of the work for the job.
+        /// </summary>
+        [Range(0, 9999999.99)]
+        public decimal Estimate { get; set; }
+
+        /// <summary>
         /// Description of the job.
         /// </summary>
         public string Description { get; set; }
