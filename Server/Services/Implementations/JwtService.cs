@@ -13,13 +13,13 @@ namespace Service.Server.Services.Implementations
     /// </summary>
     public sealed class JwtService : IJwtService
     {
-        private readonly ServiceSettings _settings;
+        private readonly JwtSettings _settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JwtService" /> class.
         /// </summary>
         /// <param name="options">Option settings to use.</param>
-        public JwtService(IOptions<ServiceSettings> options)
+        public JwtService(IOptions<JwtSettings> options)
         { 
             if (options == null)
             {
@@ -43,13 +43,14 @@ namespace Service.Server.Services.Implementations
             };
 
             // Use the configure secret key to sign the tokens.
-            var key = new SymmetricSecurityKey(_settings.JwtKey);
+            var key = new SymmetricSecurityKey(_settings.Key);
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
             // Build the token.
             var token = new JwtSecurityToken
             (
                 claims: claims,
+                issuer: _settings.Issuer,
                 expires: TimeProvider.Current.Now.AddDays(1),
                 signingCredentials: credentials
             );

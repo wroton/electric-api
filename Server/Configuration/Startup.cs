@@ -12,6 +12,7 @@ using Service.Server.Services.Interfaces;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 
 namespace Service.Server.Configuration
 {
@@ -51,14 +52,33 @@ namespace Service.Server.Configuration
             services.AddTransient<ITechnicianService, TechnicianService>();
             services.AddTransient<IUserService, UserService>();
 
-            // Setup API requirements.
+            // Setup JSON options.
             services.AddControllers().AddJsonOptions(jsonOptions =>
             {
                 jsonOptions.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });
+
+            // Setup Swagger.
             services.AddSwaggerGen(c =>
             {
+                // Setup the document for version 1.
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Server", Version = "v1" });
+
+                // Create the security schema for an authorization token.
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Description = "Authorization Token",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                };
+
+                // Define the security definition and set it as a requirement.
+                c.AddSecurityDefinition("Authorization", securityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { securityScheme, Array.Empty<string>() }
+                });
             });
 
             // Add jwt authentication.
@@ -91,7 +111,6 @@ namespace Service.Server.Configuration
             // Setup settings for all environments.
             applicationBuilder.UseHttpsRedirection();
             applicationBuilder.UseRouting();
-            applicationBuilder.UseMiddleware<AuthorizationMiddleware>();
             applicationBuilder.UseAuthentication();
             applicationBuilder.UseAuthorization();
             applicationBuilder.UseEndpoints(endpoints =>

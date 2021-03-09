@@ -21,13 +21,11 @@ namespace Service.Server.Configuration
                 // Validation options.
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(new byte[4] { 1, 2, 3, 4 }),
+                    ValidateIssuerSigningKey = true,
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-
-
             });
         }
     }

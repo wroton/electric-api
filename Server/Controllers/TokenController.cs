@@ -51,7 +51,6 @@ namespace Service.Server.Controllers
         /// <param name="authenticationDetails">Authentication details used to authenticate the user.</param>
         /// <returns>Authorization token.</returns>
         [HttpPost]
-        [Authorize]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Post([FromBody] AuthenticationDetails authenticationDetails)
