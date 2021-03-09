@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Service.Server.Controllers
     /// <summary>
     /// Handles technician position related requests.
     /// </summary>
+    [Authorize]
     [Route("api/1/technicianpositions")]
     public class TechnicianPositionsController : BaseController
     {

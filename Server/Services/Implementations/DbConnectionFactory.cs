@@ -36,7 +36,6 @@ namespace Service.Server.Services.Implementations
         public IDbConnection Build()
         {
             var connection = new SqlConnection(_settings.ServiceConnectionString);
-            connection.Open();
             return connection;
         }
     }

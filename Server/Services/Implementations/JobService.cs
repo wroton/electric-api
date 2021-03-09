@@ -16,7 +16,7 @@ namespace Service.Server.Services.Implementations
     /// </summary>
     public class JobService : IJobService
     {
-        private readonly IDbConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobService" /> class.
@@ -24,12 +24,7 @@ namespace Service.Server.Services.Implementations
         /// <param name="connectionFactory">Database connection factory to use.</param>
         public JobService(IDbConnectionFactory connectionFactory)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            _connection = connectionFactory.Build();
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         /// <summary>
@@ -38,8 +33,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>List of ids of the jobs to which the caller has access.</returns>
         public async Task<IEnumerable<int>> List()
         {
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT Id FROM Job.vJobs";
-            var dbIds = await _connection.QueryAsync<int>(sql);
+            var dbIds = await connection.QueryAsync<int>(sql);
             return dbIds;
         }
 
@@ -57,8 +53,9 @@ namespace Service.Server.Services.Implementations
 
             var splitIds = string.Join(',', ids);
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Job.Jobs_Resolve";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbJobs = await connection.QueryAsync<JobEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
             var jobs = dbJobs.Select(MapFromDB);
             return jobs;
         }
@@ -70,8 +67,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>Job with the given id.</returns>
         public async Task<Job> Get(int id)
         {
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT * FROM Job.vJobs WHERE Id = @id";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(sql, new { id });
+            var dbJobs = await connection.QueryAsync<JobEntity>(sql, new { id });
             var job = MapFromDB(dbJobs.SingleOrDefault());
             return job;
         }
@@ -88,8 +86,9 @@ namespace Service.Server.Services.Implementations
                 throw new ArgumentNullException(nameof(job));
             }
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Job.Job_Create";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(storedProcedure, new
+            var dbJobs = await connection.QueryAsync<JobEntity>(storedProcedure, new
             {
                 job.Title,
                 job.StartTime,
@@ -122,8 +121,9 @@ namespace Service.Server.Services.Implementations
                 throw new ArgumentException("Id must be provided.", nameof(job));
             }
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Job.Job_Update";
-            var dbJobs = await _connection.QueryAsync<JobEntity>(storedProcedure, new
+            var dbJobs = await connection.QueryAsync<JobEntity>(storedProcedure, new
             {
                 job.Id,
                 job.Title,
@@ -147,8 +147,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>Status code indicating the result of the request.</returns>
         public async Task Delete(int id)
         {
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Job.Job_Delete";
-            await _connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
+            await connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 
         /// <summary>

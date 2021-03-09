@@ -16,7 +16,7 @@ namespace Service.Server.Services.Implementations
     /// </summary>
     public sealed class BusinessService : IBusinessService
     {
-        private readonly IDbConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BusinessService" /> class.
@@ -24,12 +24,7 @@ namespace Service.Server.Services.Implementations
         /// <param name="connectionFactory">Database connection factory to use.</param>
         public BusinessService(IDbConnectionFactory connectionFactory)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            _connection = connectionFactory.Build();
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         /// <summary>
@@ -38,8 +33,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>List of ids of the businesses to which the caller has access.</returns>
         public async Task<IEnumerable<int>> List()
         {
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT Id FROM Business.vBusinesses";
-            var dbIds = await _connection.QueryAsync<int>(sql);
+            var dbIds = await connection.QueryAsync<int>(sql);
             return dbIds;
         }
 
@@ -57,8 +53,9 @@ namespace Service.Server.Services.Implementations
 
             var splitIds = string.Join(',', ids);
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Business.Businesses_Resolve";
-            var dbBusinesss = await _connection.QueryAsync<BusinessEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbBusinesss = await connection.QueryAsync<BusinessEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
             var businesses = dbBusinesss.Select(MapFromDB);
             return businesses;
         }
@@ -70,8 +67,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>Business with the given id.</returns>
         public async Task<Business> Get(int id)
         {
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT * FROM Business.vBusinesss WHERE Id = @id";
-            var dbBusinesss = await _connection.QueryAsync<BusinessEntity>(sql, new { id });
+            var dbBusinesss = await connection.QueryAsync<BusinessEntity>(sql, new { id });
             var business = MapFromDB(dbBusinesss.SingleOrDefault());
             return business;
         }
@@ -88,8 +86,9 @@ namespace Service.Server.Services.Implementations
                 throw new ArgumentNullException(nameof(business));
             }
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Business.Business_Create";
-            var dbBusinesses = await _connection.QueryAsync<BusinessEntity>(storedProcedure, new
+            var dbBusinesses = await connection.QueryAsync<BusinessEntity>(storedProcedure, new
             {
                 business.Name,
                 business.AddressLine1,
@@ -119,8 +118,9 @@ namespace Service.Server.Services.Implementations
                 throw new ArgumentException("Id must be provided.", nameof(business));
             }
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Business.Business_Update";
-            var dbBusinesses = await _connection.QueryAsync<BusinessEntity>(storedProcedure, new
+            var dbBusinesses = await connection.QueryAsync<BusinessEntity>(storedProcedure, new
             {
                 business.Id,
                 business.Name,
@@ -141,8 +141,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>Status code indicating the result of the request.</returns>
         public async Task Delete(int id)
         {
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Business.Business_Delete";
-            await _connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
+            await connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 
         /// <summary>

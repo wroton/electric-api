@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -5,14 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 using Service.Server.Services.Implementations;
 using Service.Server.Services.Interfaces;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 
 namespace Service.Server.Configuration
 {
@@ -40,6 +38,7 @@ namespace Service.Server.Configuration
         {
             // Bind settings.
             services.Configure<ServiceSettings>(_configuration.GetSection("Settings"));
+            services.Configure<JwtSettings>(_configuration.GetSection("Jwt"));
 
             // Tranient services.
             services.AddTransient<IBusinessService, BusinessService>();
@@ -51,6 +50,12 @@ namespace Service.Server.Configuration
             services.AddTransient<ITechnicianPositionService, TechnicianPositionService>();
             services.AddTransient<ITechnicianService, TechnicianService>();
             services.AddTransient<IUserService, UserService>();
+
+            // Request scoped services.
+            services.AddScoped<IRequestContext, RequestContext>();
+
+            // Allow the http context to be accessed.
+            services.AddHttpContextAccessor();
 
             // Setup JSON options.
             services.AddControllers().AddJsonOptions(jsonOptions =>
@@ -81,8 +86,8 @@ namespace Service.Server.Configuration
                 });
             });
 
-            // Add jwt authentication.
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+            // Add JWT authentication.
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearerConfiguration(_configuration);
         }
 
         /// <summary>

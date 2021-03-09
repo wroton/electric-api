@@ -19,6 +19,7 @@ namespace Service.Server.Controllers
         private readonly IUserService _userService;
         private readonly IHashService _hashService;
         private readonly IJwtService _jwtService;
+        private readonly IRequestContext _requestContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenController" /> class.
@@ -26,11 +27,13 @@ namespace Service.Server.Controllers
         /// <param name="userService">User service to use.</param>
         /// <param name="hashService">Hash service to use.</param>
         /// <param name="jwtService">Jwt service to use.</param>
-        public TokenController(IUserService userService, IHashService hashService, IJwtService jwtService)
+        /// <param name="requestContext">Request context to use.</param>
+        public TokenController(IUserService userService, IHashService hashService, IJwtService jwtService, IRequestContext requestContext)
         {
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
             _hashService = hashService ?? throw new ArgumentNullException(nameof(hashService));
             _jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
+            _requestContext = requestContext ?? throw new ArgumentNullException(nameof(requestContext));
         }
 
         /// <summary>
@@ -42,7 +45,16 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(User), 200)]
         public async Task<IActionResult> Get()
         {
-            return Ok();
+            // Get the user.
+            var user = await _requestContext.User();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Map the user and return.
+            var mappedUser = _userService.MapFromDB(user);
+            return Ok(mappedUser);
         }
 
         /// <summary>

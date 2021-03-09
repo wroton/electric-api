@@ -16,7 +16,7 @@ namespace Service.Server.Services.Implementations
     /// </summary>
     public class ClientService : IClientService
     {
-        private readonly IDbConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientService" /> class.
@@ -24,12 +24,7 @@ namespace Service.Server.Services.Implementations
         /// <param name="connectionFactory">Database connection factory to use.</param>
         public ClientService(IDbConnectionFactory connectionFactory)
         {
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            _connection = connectionFactory.Build();
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         /// <summary>
@@ -38,8 +33,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>List of ids of the clients to which the caller has access.</returns>
         public async Task<IEnumerable<int>> List()
         {
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT Id FROM Client.vClients";
-            var dbIds = await _connection.QueryAsync<int>(sql);
+            var dbIds = await connection.QueryAsync<int>(sql);
             return dbIds;
         }
 
@@ -57,8 +53,9 @@ namespace Service.Server.Services.Implementations
 
             var splitIds = string.Join(',', ids);
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Client.Clients_Resolve";
-            var dbClients = await _connection.QueryAsync<ClientEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbClients = await connection.QueryAsync<ClientEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
             var clients = dbClients.Select(MapFromDB);
             return clients;
         }
@@ -70,8 +67,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>Client with the given id.</returns>
         public async Task<Client> Get(int id)
         {
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT * FROM Client.vClients WHERE Id = @id";
-            var dbClients = await _connection.QueryAsync<ClientEntity>(sql, new { id });
+            var dbClients = await connection.QueryAsync<ClientEntity>(sql, new { id });
             var client = MapFromDB(dbClients.SingleOrDefault());
             return client;
         }
@@ -88,8 +86,9 @@ namespace Service.Server.Services.Implementations
                 throw new ArgumentNullException(nameof(client));
             }
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Client.Client_Create";
-            var dbClients = await _connection.QueryAsync<ClientEntity>(storedProcedure, new
+            var dbClients = await connection.QueryAsync<ClientEntity>(storedProcedure, new
             {
                 client.Name,
                 client.AddressLine1,
@@ -119,8 +118,9 @@ namespace Service.Server.Services.Implementations
                 throw new ArgumentException("Id must be provided.", nameof(client));
             }
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Client.Client_Update";
-            var dbClients = await _connection.QueryAsync<ClientEntity>(storedProcedure, new
+            var dbClients = await connection.QueryAsync<ClientEntity>(storedProcedure, new
             {
                 client.Id,
                 client.Name,
@@ -141,8 +141,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>Status code indicating the result of the request.</returns>
         public async Task Delete(int id)
         {
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "Client.Client_Delete";
-            await _connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
+            await connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 
         /// <summary>

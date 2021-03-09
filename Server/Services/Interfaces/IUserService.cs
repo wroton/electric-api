@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using Service.Server.Entities;
 using Service.Server.Models;
 
 namespace Service.Server.Services.Interfaces
@@ -51,5 +51,12 @@ namespace Service.Server.Services.Interfaces
         /// <param name="id">Id of the user to delete.</param>
         /// <returns>Deleted user.</returns>
         Task Delete(int id);
+
+        /// <summary>
+        /// Maps a user from the database to its associated DTO.
+        /// </summary>
+        /// <param name="user">User to map.</param>
+        /// <returns>Mapped user.</returns>
+        User MapFromDB(UserEntity user);
     }
 }

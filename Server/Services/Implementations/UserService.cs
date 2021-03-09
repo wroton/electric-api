@@ -17,7 +17,7 @@ namespace Service.Server.Services.Implementations
     /// </summary>
     public sealed class UserService : IUserService
     {
-        private readonly IDbConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
         private readonly IHashService _hashService;
 
         /// <summary>
@@ -28,13 +28,7 @@ namespace Service.Server.Services.Implementations
         public UserService(IHashService hashService, IDbConnectionFactory connectionFactory)
         {
             _hashService = hashService ?? throw new ArgumentNullException(nameof(hashService));
-
-            if (connectionFactory == null)
-            {
-                throw new ArgumentNullException(nameof(connectionFactory));
-            }
-
-            _connection = connectionFactory.Build();
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         /// <summary>
@@ -51,8 +45,9 @@ namespace Service.Server.Services.Implementations
 
             var splitIds = string.Join(',', ids);
 
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "User.Users_Resolve";
-            var dbUsers = await _connection.QueryAsync<UserEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
             var users = dbUsers.Select(MapFromDB);
             return users;
         }
@@ -64,8 +59,9 @@ namespace Service.Server.Services.Implementations
         /// <returns>User with the corresponding id. Null if the user was not found.</returns>
         public async Task<User> Get(int id)
         {
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT * FROM [User].vUsers WHERE Id = @id;";
-            var dbUsers = await _connection.QueryAsync<UserEntity>(sql, new { id });
+            var dbUsers = await connection.QueryAsync<UserEntity>(sql, new { id });
             var createdUser = MapFromDB(dbUsers.SingleOrDefault());
             return createdUser;
         }
@@ -82,8 +78,9 @@ namespace Service.Server.Services.Implementations
                 throw new WhiteSpaceException(nameof(username));
             }
 
+            using var connection = _connectionFactory.Build();
             const string sql = "SELECT * FROM [User].vUsers WHERE Username = @username;";
-            var dbUsers = await _connection.QueryAsync<UserEntity>(sql, new { username });
+            var dbUsers = await connection.QueryAsync<UserEntity>(sql, new { username });
             var createdUser = MapFromDB(dbUsers.SingleOrDefault());
             return createdUser;
         }
@@ -105,8 +102,9 @@ namespace Service.Server.Services.Implementations
             var hashedPassword = _hashService.Hash(user.Password, salt);
 
             // Create a user.
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Create";
-            var dbUsers = await _connection.QueryAsync<UserEntity>(storedProcedure, new { user.Username, Password = hashedPassword, user.BusinessId });
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.Username, Password = hashedPassword, user.BusinessId });
             var createdUser = MapFromDB(dbUsers.FirstOrDefault());
             return createdUser;
         }
@@ -128,8 +126,9 @@ namespace Service.Server.Services.Implementations
             var hashedPassword = _hashService.Hash(user.Password, salt);
 
             // Create a user.
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Update";
-            var dbUsers = await _connection.QueryAsync<UserEntity>(storedProcedure, new { user.Id, user.Username, Password = hashedPassword });
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.Id, user.Username, Password = hashedPassword });
             var updatedUser = MapFromDB(dbUsers.FirstOrDefault());
             return updatedUser;
         }
@@ -142,8 +141,9 @@ namespace Service.Server.Services.Implementations
         public async Task Delete(int id)
         {
             // Delete the user.
+            using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Delete";
-            await _connection.ExecuteAsync(storedProcedure, new { Id = id });
+            await connection.ExecuteAsync(storedProcedure, new { Id = id });
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Service.Server.Services.Implementations
         /// </summary>
         /// <param name="user">User to map.</param>
         /// <returns>Mapped user.</returns>
-        private User MapFromDB(UserEntity user) => user == null ? null : new User
+        public User MapFromDB(UserEntity user) => user == null ? null : new User
         {
             Id = user.Id,
             Username = user.Username,
