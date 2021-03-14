@@ -47,7 +47,7 @@ namespace Service.Server.Services.Implementations
 
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "User.Users_Resolve";
-            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { Ids = splitIds }, commandType: CommandType.StoredProcedure);
             var users = dbUsers.Select(MapFromDB);
             return users;
         }
@@ -99,7 +99,7 @@ namespace Service.Server.Services.Implementations
 
             // Hash the password using a random salt.
             var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(user.Password, salt);
+            var hashedPassword = _hashService.Hash(user.NewPassword, salt);
 
             // Create a user.
             using var connection = _connectionFactory.Build();
@@ -123,7 +123,7 @@ namespace Service.Server.Services.Implementations
 
             // Hash the password using a random salt.
             var salt = _hashService.GenerateSalt();
-            var hashedPassword = _hashService.Hash(user.Password, salt);
+            var hashedPassword = _hashService.Hash(user.NewPassword, salt);
 
             // Create a user.
             using var connection = _connectionFactory.Build();

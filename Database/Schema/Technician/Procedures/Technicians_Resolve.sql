@@ -9,5 +9,5 @@ FROM
 	INNER JOIN Technician.vTechnicians AS t ON t.Id = ids.[value];
 GO
 
-GRANT EXECUTE ON Technician.Technicians_Resolve TO [Service];
+GRANT EXECUTE ON Technician.Technicians_Resolve TO [ElectricApi];
 GO

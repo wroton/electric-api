@@ -1,2 +1,5 @@
-﻿CREATE LOGIN [Service] WITH PASSWORD = N'Service_Password!123';
+﻿CREATE LOGIN [ElectricApi] WITH PASSWORD = N'#tPHFCLrpf7?@pk4q59#';
+GO
+
+GRANT CONNECT TO [ElectricApi];
 GO

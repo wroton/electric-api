@@ -22,5 +22,5 @@ WHERE
 	Id = SCOPE_IDENTITY();
 GO
 
-GRANT EXECUTE ON Business.Business_Create TO [Service];
+GRANT EXECUTE ON Business.Business_Create TO [ElectricApi];
 GO

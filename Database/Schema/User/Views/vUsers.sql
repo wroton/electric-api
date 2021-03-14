@@ -12,5 +12,5 @@ FROM
 	LEFT JOIN Business.Businesses AS b ON b.Id = u.BusinessId;
 GO
 
-GRANT SELECT ON [User].vUsers TO [Service];
+GRANT SELECT ON [User].vUsers TO [ElectricApi];
 GO

@@ -1,2 +1,2 @@
-﻿CREATE USER [Service] FOR LOGIN [Service]
+﻿CREATE USER [ElectricApi] FOR LOGIN [ElectricApi]
 GO

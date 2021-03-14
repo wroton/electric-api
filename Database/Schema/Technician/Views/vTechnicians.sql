@@ -9,5 +9,5 @@ FROM
 	Technician.Technicians AS t;
 GO
 
-GRANT SELECT ON Technician.vTechnicians TO [Service];
+GRANT SELECT ON Technician.vTechnicians TO [ElectricApi];
 GO

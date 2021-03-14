@@ -20,5 +20,5 @@ WHERE
 	Id = @Id;
 GO
 
-GRANT EXECUTE ON Technician.Technician_Update TO [Service];
+GRANT EXECUTE ON Technician.Technician_Update TO [ElectricApi];
 GO

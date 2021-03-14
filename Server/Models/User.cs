@@ -28,6 +28,12 @@ namespace Service.Server.Models
         public string Password { get; set; }
 
         /// <summary>
+        /// New password to apply to the user.
+        /// </summary>
+        [MinLength(8)]
+        public string NewPassword { get; set; }
+
+        /// <summary>
         /// Id of the business to which the user belongs.
         /// </summary>
         public int? BusinessId { get; set; }

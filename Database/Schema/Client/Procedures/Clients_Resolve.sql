@@ -9,5 +9,5 @@ FROM
 	INNER JOIN Client.vClients AS c ON c.Id = ids.[value];
 GO
 
-GRANT EXECUTE ON Client.Clients_Resolve TO [Service];
+GRANT EXECUTE ON Client.Clients_Resolve TO [ElectricApi];
 GO
