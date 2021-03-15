@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Linq;
 using System.Text.Json.Serialization;
 
 using Service.Server.Services.Implementations;
 using Service.Server.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Service.Server.Configuration
 {
@@ -95,7 +95,10 @@ namespace Service.Server.Configuration
         /// </summary>
         /// <param name="applicationBuilder">Application builder used to prepare the application.</param>
         /// <param name="environment">Information about the current environment.</param>
-        public void Configure(IApplicationBuilder applicationBuilder, IWebHostEnvironment environment)
+        /// <param name="applicationLifetime">Callbacks to use for lifetime events.</param>
+        /// <param name="loggerFactory">Logger factory used to build loggers.</param>
+        public void Configure(IApplicationBuilder applicationBuilder, IWebHostEnvironment environment,
+            IHostApplicationLifetime applicationLifetime, ILoggerFactory loggerFactory)
         {
             // Setup development specific settings.
             if (environment.IsDevelopment())
@@ -122,6 +125,14 @@ namespace Service.Server.Configuration
             {
                 endpoints.MapControllers();
             });
+
+            // Create a logger for the application lifetime.
+            var logger = loggerFactory.CreateLogger<IHostApplicationLifetime>();
+
+            // Application lifetime events.
+            applicationLifetime.ApplicationStarted.Register(() => logger.LogInformation("Application started."));
+            applicationLifetime.ApplicationStopping.Register(() => logger.LogInformation("Application stopping."));
+            applicationLifetime.ApplicationStopped.Register(() => logger.LogInformation("Application stopped."));
         }
     }
 }

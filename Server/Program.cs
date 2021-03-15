@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.Extensions.Logging;
 using Service.Server.Configuration;
 
 namespace Service.Server
@@ -20,7 +20,13 @@ namespace Service.Server
             var hostBuilder = Host.CreateDefaultBuilder(arguments);
             hostBuilder.ConfigureWebHostDefaults(webHostBuilder =>
             {
-                webHostBuilder.UseStartup<Startup>();
+                webHostBuilder.UseStartup<Startup>().ConfigureLogging(loggingBuilder =>
+                {
+                    loggingBuilder.ClearProviders();
+                    loggingBuilder.AddConsole();
+                    loggingBuilder.AddDebug();
+                    loggingBuilder.AddAzureWebAppDiagnostics();
+                });
             });
 
             // Build the host.
