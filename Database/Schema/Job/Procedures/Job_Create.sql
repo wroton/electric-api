@@ -27,5 +27,5 @@ WHERE
 	Id = SCOPE_IDENTITY();
 GO
 
-GRANT EXECUTE ON Job.Job_Create TO [ElectricApi];
+GRANT EXECUTE ON Job.Job_Create TO ElectricApi;
 GO

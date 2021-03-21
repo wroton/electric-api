@@ -33,5 +33,5 @@ END
 END CATCH
 GO
 
-GRANT EXECUTE ON [User].User_Delete TO [ElectricApi];
+GRANT EXECUTE ON [User].User_Delete TO ElectricApi;
 GO

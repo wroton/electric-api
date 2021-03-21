@@ -22,5 +22,5 @@ FROM
 	INNER JOIN Technician.Technicians AS t ON t.Id = j.TechnicianId;
 GO
 
-GRANT SELECT ON Job.vJobs TO [ElectricApi];
+GRANT SELECT ON Job.vJobs TO ElectricApi;
 GO

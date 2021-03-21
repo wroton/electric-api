@@ -78,15 +78,12 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 409)]
         public async Task<IActionResult> Post([FromBody] User user)
         {
-            // Ensure the username isn't already taken.
-            var existingUser = await _userService.Get(user.Username);
+            // Ensure the email address isn't already taken.
+            var existingUser = await _userService.Get(user.EmailAddress);
             if (existingUser != null)
             {
-                return Conflict("The username provided is unavailable.");
+                return Conflict("The email address provided is unavailable.");
             }
-
-            // Override the business id with the one of the calling user.
-            user.BusinessId = null;
 
             // Create the user.
             var createdUser = await _userService.Create(user);

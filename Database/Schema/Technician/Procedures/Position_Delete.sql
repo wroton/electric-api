@@ -33,5 +33,5 @@ END
 END CATCH
 GO
 
-GRANT EXECUTE ON Technician.Position_Delete TO [ElectricApi];
+GRANT EXECUTE ON Technician.Position_Delete TO ElectricApi;
 GO

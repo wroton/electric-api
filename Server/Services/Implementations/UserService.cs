@@ -67,20 +67,20 @@ namespace Service.Server.Services.Implementations
         }
 
         /// <summary>
-        /// Gets a user with the given username.
+        /// Gets a user with the given email address.
         /// </summary>
-        /// <param name="username">Username of the user to get.</param>
-        /// <returns>User with the corresponding username. Null if the user was not found.</returns>
-        public async Task<User> Get(string username)
+        /// <param name="emailAddress">Email address of the user to get.</param>
+        /// <returns>User with the corresponding email address. Null if the user was not found.</returns>
+        public async Task<User> Get(string emailAddress)
         { 
-            if (string.IsNullOrWhiteSpace(username))
+            if (string.IsNullOrWhiteSpace(emailAddress))
             {
-                throw new WhiteSpaceException(nameof(username));
+                throw new WhiteSpaceException(nameof(emailAddress));
             }
 
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT * FROM [User].vUsers WHERE Username = @username;";
-            var dbUsers = await connection.QueryAsync<UserEntity>(sql, new { username });
+            const string sql = "SELECT * FROM [User].vUsers WHERE EmailAddress = @emailAddress;";
+            var dbUsers = await connection.QueryAsync<UserEntity>(sql, new { emailAddress });
             var createdUser = MapFromDB(dbUsers.SingleOrDefault());
             return createdUser;
         }
@@ -104,7 +104,7 @@ namespace Service.Server.Services.Implementations
             // Create a user.
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Create";
-            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.Username, Password = hashedPassword, user.BusinessId });
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.EmailAddress, Password = hashedPassword });
             var createdUser = MapFromDB(dbUsers.FirstOrDefault());
             return createdUser;
         }
@@ -128,7 +128,7 @@ namespace Service.Server.Services.Implementations
             // Create a user.
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Update";
-            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.Id, user.Username, Password = hashedPassword });
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.Id, user.EmailAddress, Password = hashedPassword });
             var updatedUser = MapFromDB(dbUsers.FirstOrDefault());
             return updatedUser;
         }
@@ -154,10 +154,8 @@ namespace Service.Server.Services.Implementations
         public User MapFromDB(UserEntity user) => user == null ? null : new User
         {
             Id = user.Id,
-            Username = user.Username,
-            Password = user.Password,
-            BusinessId = user.BusinessId,
-            BusinessName = user.BusinessName
+            EmailAddress = user.EmailAddress,
+            Password = user.Password
         };
     }
 }

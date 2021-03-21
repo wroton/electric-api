@@ -32,5 +32,5 @@ WHERE
 	Id = @Id;
 GO
 
-GRANT EXECUTE ON Job.Job_Update TO [ElectricApi];
+GRANT EXECUTE ON Job.Job_Update TO ElectricApi;
 GO

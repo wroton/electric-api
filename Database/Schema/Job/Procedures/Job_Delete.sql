@@ -8,5 +8,5 @@ WHERE
 	Id = @Id;
 GO
 
-GRANT EXECUTE ON Job.Job_Delete TO [ElectricApi];
+GRANT EXECUTE ON Job.Job_Delete TO ElectricApi;
 GO

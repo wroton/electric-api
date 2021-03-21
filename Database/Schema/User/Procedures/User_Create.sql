@@ -1,13 +1,12 @@
 ﻿CREATE PROCEDURE [User].User_Create
-	@Username NVARCHAR(100),
-	@Password NCHAR(64),
-	@BusinessId INT
+	@EmailAddress NVARCHAR(320),
+	@Password NCHAR(64)
 AS
 
 INSERT INTO [User].Users
-	(Username, [Password], BusinessId)
+	(EmailAddress, [Password])
 VALUES
-	(@Username, @Password, @BusinessId);
+	(@EmailAddress, @Password);
 
 SELECT
 	*
@@ -17,5 +16,5 @@ WHERE
 	Id = SCOPE_IDENTITY();
 GO
 
-GRANT EXECUTE ON [User].User_Create TO [ElectricApi];
+GRANT EXECUTE ON [User].User_Create TO ElectricApi;
 GO

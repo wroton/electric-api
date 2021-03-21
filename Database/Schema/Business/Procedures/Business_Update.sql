@@ -28,5 +28,5 @@ WHERE
 	Id = @Id;
 GO
 
-GRANT EXECUTE ON Business.Business_Update TO [ElectricApi];
+GRANT EXECUTE ON Business.Business_Update TO ElectricApi;
 GO

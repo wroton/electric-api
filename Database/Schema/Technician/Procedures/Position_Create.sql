@@ -16,5 +16,5 @@ WHERE
 	Id = SCOPE_IDENTITY();
 GO
 
-GRANT EXECUTE ON Technician.Position_Create TO [ElectricApi];
+GRANT EXECUTE ON Technician.Position_Create TO ElectricApi;
 GO

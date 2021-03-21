@@ -9,5 +9,5 @@ FROM
 	INNER JOIN [User].vUsers AS u ON u.Id = ids.[value];
 GO
 
-GRANT EXECUTE ON [User].Users_Resolve TO [ElectricApi];
+GRANT EXECUTE ON [User].Users_Resolve TO ElectricApi;
 GO

@@ -1,13 +1,13 @@
 ﻿CREATE PROCEDURE [User].User_Update
 	@Id INT,
-	@Username NVARCHAR(50),
+	@EmailAddress NVARCHAR(320),
 	@Password NCHAR(64)
 AS
 
 UPDATE
 	[User].Users
 SET
-	Username = @Username,
+	EmailAddress = @EmailAddress,
 	[Password] = @Password
 WHERE
 	Id = @Id;
@@ -20,5 +20,5 @@ WHERE
 	Id = @Id;
 GO
 
-GRANT EXECUTE ON [User].User_Update TO [ElectricApi];
+GRANT EXECUTE ON [User].User_Update TO ElectricApi;
 GO

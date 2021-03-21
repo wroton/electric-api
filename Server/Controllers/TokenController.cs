@@ -73,7 +73,7 @@ namespace Service.Server.Controllers
             }
 
             // Get the user.
-            var dbUser = await _userService.Get(authenticationDetails.Username);
+            var dbUser = await _userService.Get(authenticationDetails.EmailAddress);
             if (dbUser == null)
             {
                 return Unauthorized();

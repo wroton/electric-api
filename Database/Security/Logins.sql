@@ -1,5 +1,5 @@
-﻿CREATE LOGIN [ElectricApi] WITH PASSWORD = N'#tPHFCLrpf7?@pk4q59#';
+﻿CREATE LOGIN ElectricApi WITH PASSWORD = N'#tPHFCLrpf7?@pk4q59#';
 GO
 
-GRANT CONNECT TO [ElectricApi];
+GRANT CONNECT TO ElectricApi;
 GO

@@ -17,8 +17,8 @@ namespace Service.Server.Models
         /// Unique username of the user.
         /// </summary>
         [Required]
-        [StringLength(100, MinimumLength = 8)]
-        public string Username { get; set; }
+        [StringLength(320, MinimumLength = 5)]
+        public string EmailAddress { get; set; }
 
         /// <summary>
         /// Password of the user.
@@ -32,15 +32,5 @@ namespace Service.Server.Models
         /// </summary>
         [MinLength(8)]
         public string NewPassword { get; set; }
-
-        /// <summary>
-        /// Id of the business to which the user belongs.
-        /// </summary>
-        public int? BusinessId { get; set; }
-
-        /// <summary>
-        /// Name of the business to which the user belongs.
-        /// </summary>
-        public string BusinessName { get; set; }
     }
 }

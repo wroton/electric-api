@@ -11,23 +11,13 @@
         public int Id { get; private set; }
 
         /// <summary>
-        /// Unique username of the user.
+        /// Email address of the user.
         /// </summary>
-        public string Username { get; private set; }
+        public string EmailAddress { get; private set; }
 
         /// <summary>
         /// Hashed password of the user.
         /// </summary>
         public string Password { get; private set; }
-
-        /// <summary>
-        /// Id of the business to which the user belongs.
-        /// </summary>
-        public int? BusinessId { get; private set; }
-
-        /// <summary>
-        /// Name of the business to which the user belongs.
-        /// </summary>
-        public string BusinessName { get; private set; }
     }
 }

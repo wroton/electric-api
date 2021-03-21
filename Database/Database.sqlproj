@@ -131,6 +131,13 @@
     <Build Include="Schema\User\Procedures\User_Resolve.sql" />
     <Build Include="Schema\User\Procedures\User_Update.sql" />
     <Build Include="Schema\User\Procedures\User_Delete.sql" />
+    <Build Include="Schema\Technician\Tables\TechnicianInvitations.sql" />
+    <Build Include="Schema\Business\Tables\Administrators.sql" />
+    <Build Include="Schema\Business\Procedures\Administrator_Create.sql" />
+    <Build Include="Schema\Business\Views\vAdministrators.sql" />
+    <Build Include="Schema\Business\Procedures\Administrator_Delete.sql" />
+    <Build Include="Schema\Business\Procedures\Administrator_Update.sql" />
+    <Build Include="Schema\Business\Procedures\Administrators_Resolve.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

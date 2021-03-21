@@ -13,5 +13,5 @@ FROM
 	Client.Clients AS c;
 GO
 
-GRANT SELECT ON Client.vClients TO [ElectricApi];
+GRANT SELECT ON Client.vClients TO ElectricApi;
 GO

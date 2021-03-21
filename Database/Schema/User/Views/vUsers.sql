@@ -3,14 +3,11 @@ AS
 
 SELECT
 	u.Id,
-	u.Username,
-	u.[Password],
-	b.Id AS [BusinessId],
-	b.[Name] AS BusinessName
+	u.EmailAddress,
+	u.[Password]
 FROM
-	[User].Users AS u
-	LEFT JOIN Business.Businesses AS b ON b.Id = u.BusinessId;
+	[User].Users AS u;
 GO
 
-GRANT SELECT ON [User].vUsers TO [ElectricApi];
+GRANT SELECT ON [User].vUsers TO ElectricApi;
 GO

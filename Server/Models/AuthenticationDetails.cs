@@ -11,8 +11,8 @@ namespace Service.Server.Models
         /// Username of the user attempting to authenticate.
         /// </summary>
         [Required]
-        [StringLength(100, MinimumLength = 5)]
-        public string Username { get; set; }
+        [StringLength(320, MinimumLength = 5)]
+        public string EmailAddress { get; set; }
 
         /// <summary>
         /// Password of the user attempting to authenticate.

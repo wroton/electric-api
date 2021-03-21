@@ -13,5 +13,5 @@ FROM
 	Business.Businesses;
 GO
 
-GRANT SELECT ON Business.vBusinesses TO [ElectricApi];
+GRANT SELECT ON Business.vBusinesses TO ElectricApi;
 GO
