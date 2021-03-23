@@ -30,16 +30,16 @@ namespace Service.Server.Services.Implementations
         }
 
         /// <summary>
-        /// Creates a signed jwt token for a user.
+        /// Creates a signed jwt token with an id as a claim.
         /// </summary>
-        /// <param name="userId">Id of the user for whom the token is being created.</param>
+        /// <param name="id">Id to store in the token as a claim.</param>
         /// <returns>Signed token.</returns>
-        public string Token(int userId)
+        public string Token(int id)
         {
             // Store the user id as a claim.
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, userId.ToString())
+                new Claim(ClaimTypes.Name, id.ToString())
             };
 
             // Use the configure secret key to sign the tokens.
