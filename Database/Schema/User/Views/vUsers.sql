@@ -4,7 +4,8 @@ AS
 SELECT
 	u.Id,
 	u.EmailAddress,
-	u.[Password]
+	u.[Password],
+	u.BusinessId
 FROM
 	[User].Users AS u;
 GO

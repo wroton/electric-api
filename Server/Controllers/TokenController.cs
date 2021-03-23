@@ -86,7 +86,7 @@ namespace Service.Server.Controllers
             }
 
             // Create the token.
-            var token = _jwtService.Token(dbUser.Id.Value);
+            var token = _jwtService.Create(dbUser.Id.Value);
 
             // Create a cookie to be used for authorization.
             Response.Cookies.Append("Authorization", token, new CookieOptions

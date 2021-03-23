@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE Business.Administrator_Update
+﻿CREATE PROCEDURE Administrator.Administrator_Update
 	@Id INT,
 	@Name NVARCHAR(200),
 	@BusinessId INT,
@@ -6,7 +6,7 @@
 AS
 
 UPDATE
-	Business.Administrators
+	Administrator.Administrators
 SET
 	[Name] = @Name,
 	BusinessId = @BusinessId,
@@ -17,10 +17,10 @@ WHERE
 SELECT
 	*
 FROM
-	Business.vAdministrators
+	Administrator.vAdministrators
 WHERE
 	Id = @Id;
 GO
 
-GRANT EXECUTE ON Business.Administrator_Update TO ElectricApi;
+GRANT EXECUTE ON Administrator.Administrator_Update TO ElectricApi;
 GO

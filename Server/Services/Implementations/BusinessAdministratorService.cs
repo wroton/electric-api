@@ -34,7 +34,7 @@ namespace Service.Server.Services.Implementations
         public async Task<IEnumerable<int>> List()
         {
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT Id FROM Business.vAdministrators";
+            const string sql = "SELECT Id FROM Administrator.vAdministrators";
             var dbIds = await connection.QueryAsync<int>(sql);
             return dbIds;
         }
@@ -54,7 +54,7 @@ namespace Service.Server.Services.Implementations
             var splitIds = string.Join(',', ids);
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Business.Administrators_Resolve";
+            const string storedProcedure = "Administrator.Administrators_Resolve";
             var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
             var administrators = dbAdministrators.Select(MapFromDB);
             return administrators;
@@ -68,7 +68,7 @@ namespace Service.Server.Services.Implementations
         public async Task<BusinessAdministrator> Get(int id)
         {
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT * FROM Business.vAdministrators WHERE Id = @id";
+            const string sql = "SELECT * FROM Administrator.vAdministrators WHERE Id = @id";
             var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(sql, new { id });
             var administrator = MapFromDB(dbAdministrators.SingleOrDefault());
             return administrator;
@@ -87,7 +87,7 @@ namespace Service.Server.Services.Implementations
             }
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Business.Administrator_Create";
+            const string storedProcedure = "Administrator.Administrator_Create";
             var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(storedProcedure, new
             {
                 administrator.Name,
@@ -116,7 +116,7 @@ namespace Service.Server.Services.Implementations
             }
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Business.Business_Update";
+            const string storedProcedure = "Administrator.Business_Update";
             var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(storedProcedure, new
             {
                 administrator.Id,
@@ -136,7 +136,7 @@ namespace Service.Server.Services.Implementations
         public async Task Delete(int id)
         {
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Business.Administrator_Delete";
+            const string storedProcedure = "Administrator.Administrator_Delete";
             await connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 

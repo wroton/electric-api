@@ -1,4 +1,4 @@
-﻿CREATE VIEW Business.vAdministrators
+﻿CREATE VIEW Administrator.vAdministrators
 AS
 
 SELECT
@@ -8,9 +8,9 @@ SELECT
 	b.[Name] AS [BusinessName],
 	a.UserId
 FROM
-	Business.Administrators AS a
+	Administrator.Administrators AS a
 	INNER JOIN Business.Businesses AS b ON b.Id = a.BusinessId;
 GO
 
-GRANT SELECT ON Business.vAdministrators TO ElectricApi;
+GRANT SELECT ON Administrator.vAdministrators TO ElectricApi;
 GO

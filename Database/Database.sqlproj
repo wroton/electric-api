@@ -84,6 +84,10 @@
     <Folder Include="Schema\Job\Procedures" />
     <Folder Include="Schema\Job\Tables" />
     <Folder Include="Schema\Job\Views" />
+    <Folder Include="Schema\Administrator" />
+    <Folder Include="Schema\Administrator\Tables" />
+    <Folder Include="Schema\Administrator\Procedures" />
+    <Folder Include="Schema\Administrator\Views" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="Deployment\Pre\Run.sql" />
@@ -131,13 +135,15 @@
     <Build Include="Schema\User\Procedures\User_Resolve.sql" />
     <Build Include="Schema\User\Procedures\User_Update.sql" />
     <Build Include="Schema\User\Procedures\User_Delete.sql" />
-    <Build Include="Schema\Technician\Tables\TechnicianInvitations.sql" />
-    <Build Include="Schema\Business\Tables\Administrators.sql" />
-    <Build Include="Schema\Business\Procedures\Administrator_Create.sql" />
-    <Build Include="Schema\Business\Views\vAdministrators.sql" />
-    <Build Include="Schema\Business\Procedures\Administrator_Delete.sql" />
-    <Build Include="Schema\Business\Procedures\Administrator_Update.sql" />
-    <Build Include="Schema\Business\Procedures\Administrators_Resolve.sql" />
+    <Build Include="Schema\Technician\Tables\Invitations.sql" />
+    <Build Include="Schema\Administrator\Procedures\Administrator_Create.sql" />
+    <Build Include="Schema\Administrator\Procedures\Administrator_Delete.sql" />
+    <Build Include="Schema\Administrator\Procedures\Administrator_Update.sql" />
+    <Build Include="Schema\Administrator\Procedures\Administrators_Resolve.sql" />
+    <Build Include="Schema\Administrator\Tables\Administrators.sql" />
+    <Build Include="Schema\Administrator\Views\vAdministrators.sql" />
+    <Build Include="Schema\Technician\Views\vInvitations.sql" />
+    <Build Include="Schema\Technician\Procedures\Invitation_Accept.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

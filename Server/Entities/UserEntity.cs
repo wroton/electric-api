@@ -19,5 +19,10 @@
         /// Hashed password of the user.
         /// </summary>
         public string Password { get; private set; }
+
+        /// <summary>
+        /// Id of the business to which the user belongs.
+        /// </summary>
+        public int BusinessId { get; private set; }
     }
 }

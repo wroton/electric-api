@@ -10,6 +10,14 @@
         /// </summary>
         /// <param name="userId">Id of the user for whom the token is being created.</param>
         /// <returns>Signed token.</returns>
-        string Token(int userId);
+        string Create(int userId);
+
+
+        /// <summary>
+        /// Reads the id from a signed jwt token.
+        /// </summary>
+        /// <param name="token">Signed token from which the id should be read.</param>
+        /// <returns>Id from the jwt token. Null if the token couldn't be read.</returns>
+        int? Read(string token);
     }
 }

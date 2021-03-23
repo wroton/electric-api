@@ -1,12 +1,13 @@
 ﻿CREATE PROCEDURE [User].User_Create
 	@EmailAddress NVARCHAR(320),
-	@Password NCHAR(64)
+	@Password NCHAR(64),
+	@BusinessId INT
 AS
 
 INSERT INTO [User].Users
-	(EmailAddress, [Password])
+	(EmailAddress, [Password], BusinessId)
 VALUES
-	(@EmailAddress, @Password);
+	(@EmailAddress, @Password, @BusinessId);
 
 SELECT
 	*

@@ -32,5 +32,11 @@ namespace Service.Server.Models
         /// </summary>
         [MinLength(8)]
         public string NewPassword { get; set; }
+
+        /// <summary>
+        /// Id of the business to which the user belongs.
+        /// This is readonly and cannot be set.
+        /// </summary>
+        public int? BusinessId { get; set; }
     }
 }

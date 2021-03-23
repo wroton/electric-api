@@ -34,7 +34,7 @@ namespace Service.Server.Services.Implementations
         /// </summary>
         /// <param name="id">Id to store in the token as a claim.</param>
         /// <returns>Signed token.</returns>
-        public string Token(int id)
+        public string Create(int id)
         {
             // Store the user id as a claim.
             var claims = new[]
@@ -56,9 +56,46 @@ namespace Service.Server.Services.Implementations
             );
 
             // Write the token.
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            var tokenHandler = new JwtSecurityTokenHandler();
             var signedToken = tokenHandler.WriteToken(token);
             return signedToken;
+        }
+
+        /// <summary>
+        /// Reads the id from a signed jwt token.
+        /// </summary>
+        /// <param name="token">Signed token from which the id should be read.</param>
+        /// <returns>Id from the jwt token. Null if the token couldn't be read.</returns>
+        public int? Read(string token)
+        { 
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return null;
+            }
+
+            // Parameters to instruct the token reader on how the token should be validated and read.
+            var key = new SymmetricSecurityKey(_settings.Key);
+            var tokenValidationParameters = new TokenValidationParameters
+            { 
+                IssuerSigningKey = key,
+                ValidIssuer = _settings.Issuer
+            };
+
+            // Read the token.
+            var handler = new JwtSecurityTokenHandler();
+            var principal = handler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+            if (validatedToken == null)
+            {
+                return null;
+            }
+
+            // Attempt to parse the "name" as the id.
+            if (!int.TryParse(principal.Identity.Name, out int id))
+            {
+                return null;
+            }
+
+            return id;
         }
     }
 }
