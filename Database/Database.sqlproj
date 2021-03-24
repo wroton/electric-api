@@ -144,6 +144,11 @@
     <Build Include="Schema\Administrator\Views\vAdministrators.sql" />
     <Build Include="Schema\Technician\Views\vInvitations.sql" />
     <Build Include="Schema\Technician\Procedures\Invitation_Accept.sql" />
+    <Build Include="Schema\Technician\Procedures\Invitation_Create.sql" />
+    <Build Include="Schema\Administrator\Tables\Invitations.sql" />
+    <Build Include="Schema\Administrator\Views\vInvitations.sql" />
+    <Build Include="Schema\Administrator\Procedures\Invitation_Accept.sql" />
+    <Build Include="Schema\Administrator\Procedures\Invitation_Create.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

@@ -103,8 +103,8 @@ namespace Service.Server.Services.Implementations
 
             // Create a user.
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "[User].User_Create";
-            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.EmailAddress, Password = hashedPassword });
+            const string storedProcedure = "[User].User_Create @EmailAddress, @Password, @BusinessId";
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.EmailAddress, Password = hashedPassword, BusinessId = (int?)null });
             var createdUser = MapFromDB(dbUsers.FirstOrDefault());
             return createdUser;
         }
@@ -155,7 +155,8 @@ namespace Service.Server.Services.Implementations
         {
             Id = user.Id,
             EmailAddress = user.EmailAddress,
-            Password = user.Password
+            Password = user.Password,
+            BusinessId = user.BusinessId
         };
     }
 }

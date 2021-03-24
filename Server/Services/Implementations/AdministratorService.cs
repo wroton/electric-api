@@ -14,15 +14,15 @@ namespace Service.Server.Services.Implementations
     /// <summary>
     /// Handles business administrator related requests.
     /// </summary>
-    public sealed class BusinessAdministratorService : IBusinessAdministratorService
+    public sealed class AdministratorService : IAdministratorService
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BusinessAdministratorService" /> class.
+        /// Initializes a new instance of the <see cref="AdministratorService" /> class.
         /// </summary>
         /// <param name="connectionFactory">Database connection factory to use.</param>
-        public BusinessAdministratorService(IDbConnectionFactory connectionFactory)
+        public AdministratorService(IDbConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
@@ -44,7 +44,7 @@ namespace Service.Server.Services.Implementations
         /// </summary>
         /// <param name="ids">Ids of the business administrators to resolve.</param>
         /// <returns>Resolved business administrators.</returns>
-        public async Task<IEnumerable<BusinessAdministrator>> Resolve(IEnumerable<int> ids)
+        public async Task<IEnumerable<Administrator>> Resolve(IEnumerable<int> ids)
         {
             if (ids == null || !ids.Any())
             {
@@ -55,7 +55,7 @@ namespace Service.Server.Services.Implementations
 
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "Administrator.Administrators_Resolve";
-            var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbAdministrators = await connection.QueryAsync<AdministratorEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
             var administrators = dbAdministrators.Select(MapFromDB);
             return administrators;
         }
@@ -65,11 +65,11 @@ namespace Service.Server.Services.Implementations
         /// </summary>
         /// <param name="id">Id of the business administrator to get.</param>
         /// <returns>Business administrator with the given id.</returns>
-        public async Task<BusinessAdministrator> Get(int id)
+        public async Task<Administrator> Get(int id)
         {
             using var connection = _connectionFactory.Build();
             const string sql = "SELECT * FROM Administrator.vAdministrators WHERE Id = @id";
-            var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(sql, new { id });
+            var dbAdministrators = await connection.QueryAsync<AdministratorEntity>(sql, new { id });
             var administrator = MapFromDB(dbAdministrators.SingleOrDefault());
             return administrator;
         }
@@ -79,7 +79,7 @@ namespace Service.Server.Services.Implementations
         /// </summary>
         /// <param name="administrator">Business administrator to create.</param>
         /// <returns>Created business administrator.</returns>
-        public async Task<BusinessAdministrator> Create(BusinessAdministrator administrator)
+        public async Task<Administrator> Create(Administrator administrator)
         {
             if (administrator == null)
             {
@@ -88,7 +88,7 @@ namespace Service.Server.Services.Implementations
 
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "Administrator.Administrator_Create";
-            var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(storedProcedure, new
+            var dbAdministrators = await connection.QueryAsync<AdministratorEntity>(storedProcedure, new
             {
                 administrator.Name,
                 administrator.BusinessName,
@@ -103,7 +103,7 @@ namespace Service.Server.Services.Implementations
         /// </summary>
         /// <param name="administrator">Business administrator to update.</param>
         /// <returns>Updated business administrator.</returns>
-        public async Task<BusinessAdministrator> Update(BusinessAdministrator administrator)
+        public async Task<Administrator> Update(Administrator administrator)
         {
             if (administrator == null)
             {
@@ -117,7 +117,7 @@ namespace Service.Server.Services.Implementations
 
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "Administrator.Business_Update";
-            var dbAdministrators = await connection.QueryAsync<BusinessAdministratorEntity>(storedProcedure, new
+            var dbAdministrators = await connection.QueryAsync<AdministratorEntity>(storedProcedure, new
             {
                 administrator.Id,
                 administrator.Name,
@@ -145,7 +145,7 @@ namespace Service.Server.Services.Implementations
         /// </summary>
         /// <param name="administrator">Administrator to map.</param>
         /// <returns>Mapped administrator.</returns>
-        private BusinessAdministrator MapFromDB(BusinessAdministratorEntity administrator) => administrator == null ? null : new BusinessAdministrator
+        private Administrator MapFromDB(AdministratorEntity administrator) => administrator == null ? null : new Administrator
         {
             Id = administrator.Id,
             Name = administrator.Name,

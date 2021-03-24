@@ -5,7 +5,7 @@ namespace Service.Server.Models
     /// <summary>
     /// Person that administrates a business.
     /// </summary>
-    public sealed class BusinessAdministrator
+    public sealed class Administrator
     {
         /// <summary>
         /// Identifier of the administrator.
@@ -23,7 +23,7 @@ namespace Service.Server.Models
         /// Id of the business that the administrator administrates.
         /// This is set automatically and cannot be overridden.
         /// </summary>
-        public int BusinessId { get; set; }
+        public int? BusinessId { get; set; }
 
         /// <summary>
         /// Name of the business that the administrator administrates.

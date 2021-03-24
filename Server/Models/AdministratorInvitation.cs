@@ -3,14 +3,14 @@
 namespace Service.Server.Models
 {
     /// <summary>
-    /// An invitation to become a technician.
+    /// An invitation to become an administrator.
     /// </summary>
-    public sealed class TechnicianInvitation
+    public sealed class AdministratorInvitation
     {
         /// <summary>
-        /// Id of the technician that the invitee will assume.
+        /// Id of the administrator that the invitee will assume.
         /// </summary>
-        public int TechnicianId { get; set; }
+        public int AdministratorId { get; set; }
 
         /// <summary>
         /// Email address of the user that is being invited.

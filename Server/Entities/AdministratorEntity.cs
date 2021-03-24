@@ -3,7 +3,7 @@
     /// <summary>
     /// Person that administrates a business.
     /// </summary>
-    public sealed class BusinessAdministratorEntity
+    public sealed class AdministratorEntity
     {
         /// <summary>
         /// Identifier of the administrator.

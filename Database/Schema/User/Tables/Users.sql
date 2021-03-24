@@ -3,7 +3,7 @@
 	Id INT NOT NULL IDENTITY (-2147483648, 1),
 	EmailAddress NVARCHAR(320) NOT NULL,
 	[Password] NCHAR(64) NOT NULL,
-	BusinessId INT NOT NULL,
+	BusinessId INT NULL,
 	CONSTRAINT [PK_User_Users] PRIMARY KEY CLUSTERED (Id),
 	INDEX [IX_User_Users_EmailAddress] NONCLUSTERED (EmailAddress)
 );

@@ -72,6 +72,7 @@ namespace Service.Server.Controllers
         /// </summary>
         /// <param name="user">User to create.</param>
         /// <returns>Created user.</returns>
+        [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(typeof(User), 200)]
         [ProducesResponseType(typeof(string), 400)]

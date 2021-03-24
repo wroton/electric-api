@@ -22,7 +22,8 @@
 
         /// <summary>
         /// Id of the business to which the user belongs.
+        /// System administrator if there is no business.
         /// </summary>
-        public int BusinessId { get; private set; }
+        public int? BusinessId { get; private set; }
     }
 }

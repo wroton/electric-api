@@ -20,6 +20,12 @@ namespace Service.Server.Models
         public string Name { get; set; }
 
         /// <summary>
+        /// Id of the position that the technician holds.
+        /// </summary>
+        [Required]
+        public int PositionId { get; set; }
+
+        /// <summary>
         /// Id of the business to which the technician belongs.
         /// </summary>
         public int? BusinessId { get; set; }
