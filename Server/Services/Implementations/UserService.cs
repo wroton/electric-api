@@ -104,7 +104,7 @@ namespace Service.Server.Services.Implementations
             // Create a user.
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Create @EmailAddress, @Password, @BusinessId";
-            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.EmailAddress, Password = hashedPassword, BusinessId = (int?)null });
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.EmailAddress, Password = hashedPassword, user.BusinessId });
             var createdUser = MapFromDB(dbUsers.FirstOrDefault());
             return createdUser;
         }

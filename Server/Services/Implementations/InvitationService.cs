@@ -107,7 +107,7 @@ namespace Service.Server.Services.Implementations
             }
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Technician.Invitation_Create";
+            const string storedProcedure = "Technician.Invitation_Create @TechnicianId, @InvitationToken, @InvitationDate";
             var technicianInvitations = await connection.QueryAsync<TechnicianInvitationEntity>(storedProcedure, new
             { 
                 invitation.TechnicianId,
@@ -128,7 +128,7 @@ namespace Service.Server.Services.Implementations
         public async Task AcceptTechnicianInvitation(int technicianId, int userId)
         {
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Technician.Invitation_Accept";
+            const string storedProcedure = "Technician.Invitation_Accept @TechnicianId, @UserId";
             await connection.ExecuteAsync(storedProcedure, new
             {
                 TechnicianId = technicianId,

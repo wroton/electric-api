@@ -78,7 +78,8 @@ namespace Service.Server.Services.Implementations
             var tokenValidationParameters = new TokenValidationParameters
             { 
                 IssuerSigningKey = key,
-                ValidIssuer = _settings.Issuer
+                ValidIssuer = _settings.Issuer,
+                ValidateAudience = false
             };
 
             // Read the token.

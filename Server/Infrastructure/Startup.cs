@@ -42,10 +42,12 @@ namespace Service.Server.Infrastructure
             services.Configure<JwtSettings>(_configuration.GetSection("Jwt"));
 
             // Tranient services.
+            services.AddTransient<IAdministratorService, AdministratorService>();
             services.AddTransient<IBusinessService, BusinessService>();
             services.AddTransient<IClientService, ClientService>();
             services.AddTransient<IDbConnectionFactory, DbConnectionFactory>();
             services.AddTransient<IHashService, HashService>();
+            services.AddTransient<IInvitationService, InvitationService>();
             services.AddTransient<IJobService, JobService>();
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<ITechnicianPositionService, TechnicianPositionService>();

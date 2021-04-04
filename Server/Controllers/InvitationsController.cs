@@ -215,7 +215,7 @@ namespace Service.Server.Controllers
             // Determine if the user is allowed to send an invitation on behalf of the business.
             // They must either be a system admin or belong to the same business.
             var user = await _requestContext.User();
-            if (user.BusinessId.HasValue && user.BusinessId.Value != technician.BusinessId.Value)
+            if (!user.SystemAdministrator && user.BusinessId.Value != technician.BusinessId.Value)
             {
                 return Forbid();
             }
