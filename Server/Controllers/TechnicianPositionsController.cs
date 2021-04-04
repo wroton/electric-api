@@ -17,14 +17,20 @@ namespace Service.Server.Controllers
     [Route("api/1/technicianpositions")]
     public class TechnicianPositionsController : BaseController
     {
+        private readonly IRequestContext _requestContext;
+        private readonly IBusinessService _businessService;
         private readonly ITechnicianPositionService _technicianPositionService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TechnicianPositionsController" /> class.
         /// </summary>
+        /// <param name="requestContext">Request context to use.</param>
+        /// <param name="businessService">Business service to use.</param>
         /// <param name="technicianPositionService">Technician position service to use.</param>
-        public TechnicianPositionsController(ITechnicianPositionService technicianPositionService)
+        public TechnicianPositionsController(IRequestContext requestContext, IBusinessService businessService, ITechnicianPositionService technicianPositionService)
         {
+            _requestContext = requestContext ?? throw new ArgumentNullException(nameof(requestContext));
+            _businessService = businessService ?? throw new ArgumentNullException(nameof(businessService));
             _technicianPositionService = technicianPositionService ?? throw new ArgumentNullException(nameof(technicianPositionService));
         }
 
@@ -36,7 +42,8 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<int>), 200)]
         public async Task<IActionResult> List()
         {
-            var ids = await _technicianPositionService.List();
+            var user = _requestContext.User();
+            var ids = await _technicianPositionService.List(user.Id);
             return Ok(ids);
         }
 
@@ -55,7 +62,8 @@ namespace Service.Server.Controllers
                 return Ok(Array.Empty<TechnicianPosition>());
             }
 
-            var technicianPositions = await _technicianPositionService.Resolve(ids);
+            var user = _requestContext.User();
+            var technicianPositions = await _technicianPositionService.Resolve(user.Id, ids);
             return Ok(technicianPositions);
         }
 
@@ -70,10 +78,18 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
+            // Get the technician position.
             var technicianPosition = await _technicianPositionService.Get(id);
             if (technicianPosition == null)
             {
                 return NotFound("Technician position could not be found.");
+            }
+
+            // Ensure the user has access to the technician position.
+            var user = await _requestContext.User();
+            if (user.BusinessId != technicianPosition.BusinessId && !user.SystemAdministrator)
+            {
+                return Forbid();
             }
 
             return Ok(technicianPosition);
@@ -94,6 +110,32 @@ namespace Service.Server.Controllers
                 return BadRequest("Technician position was not provided in the body or could not be interpreted as JSON.");
             }
 
+            // Get the user.
+            var user = await _requestContext.User();
+
+            // If a business id wasn't provided, use the user's business.
+            var businessId = technicianPosition.BusinessId ?? user.BusinessId;
+
+            // A business must be set.
+            if (!businessId.HasValue)
+            {
+                return BadRequest("A business id must be provided.");
+            }
+
+            // Ensure the user has access to the business.
+            if (user.BusinessId != businessId && !user.SystemAdministrator)
+            {
+                return Forbid();
+            }
+
+            // Ensure the business exists.
+            var business = await _businessService.Get(businessId.Value);
+            if (business == null)
+            {
+                return Conflict("Business specified does not exist.");
+            }
+
+            // Create the position.
             var createdTechnicianPosition = await _technicianPositionService.Create(technicianPosition);
             return Ok(createdTechnicianPosition);
         }
@@ -119,6 +161,23 @@ namespace Service.Server.Controllers
                 return BadRequest("Technician position id must be provided.");
             }
 
+            // Get the technician position.
+            var dbPosition = _technicianPositionService.Get(technicianPosition.Id.Value);
+            if (dbPosition == null)
+            {
+                return NotFound();
+            }
+
+            // Get the user.
+            var user = await _requestContext.User();
+
+            // Ensure the user has access to the technician.
+            if (user.BusinessId != dbPosition.Id && !user.SystemAdministrator)
+            {
+                return Forbid();
+            }
+
+            // Update the position.
             var updatedTechnicianPosition = await _technicianPositionService.Update(technicianPosition);
             if (updatedTechnicianPosition == null)
             {

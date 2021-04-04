@@ -1,14 +1,14 @@
 ﻿CREATE PROCEDURE Technician.Technician_Update
 	@Id INT,
 	@Name NVARCHAR(100),
-	@UserId INT
+	@PositionId INT
 AS
 
 UPDATE
 	Technician.Technicians
 SET
 	[Name] = @Name,
-	UserId = @UserId
+	PositionId = @PositionId
 WHERE
 	Id = @Id;
 

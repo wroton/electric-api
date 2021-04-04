@@ -13,15 +13,17 @@ namespace Service.Server.Services.Interfaces
         /// <summary>
         /// Gets a list of technician positions to which the caller has access.
         /// </summary>
+        /// <param name="userId">Id of the user getting the positions.</param>
         /// <returns>List of ids of the technician positions to which the caller has access.</returns>
-        Task<IEnumerable<int>> List();
+        Task<IEnumerable<int>> List(int userId);
 
         /// <summary>
         /// Resolves a list of technician positions.
         /// </summary>
+        /// <param name="userId">Id of the user requesting the positions.</param>
         /// <param name="ids">Ids of the technician positions to resolve.</param>
         /// <returns>Resolved technician positions.</returns>
-        Task<IEnumerable<TechnicianPosition>> Resolve(IEnumerable<int> ids);
+        Task<IEnumerable<TechnicianPosition>> Resolve(int userId, IEnumerable<int> ids);
 
         /// <summary>
         /// Gets a technician position.

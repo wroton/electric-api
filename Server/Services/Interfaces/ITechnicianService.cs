@@ -11,17 +11,20 @@ namespace Service.Server.Services.Interfaces
     public interface ITechnicianService
     {
         /// <summary>
-        /// Gets a list of technicians to which the caller has access.
+        /// Searches a list of technicians to which the caller has access.
         /// </summary>
-        /// <returns>List of ids of the technicians to which the caller has access.</returns>
-        Task<IEnumerable<int>> List();
+        /// <param name="userId">Id of the user performing the search.</param>
+        /// <param name="searchCriteria">Criteria by which the search should be performed.</param>
+        /// <returns>List of ids of the technicians.</returns>
+        Task<IEnumerable<int>> Search(int userId, TechnicianSearch searchCriteria);
 
         /// <summary>
         /// Resolves a list of technicians.
         /// </summary>
+        /// <param name="userId">Id of the user requesting the technicians.</param>
         /// <param name="ids">Ids of the technicians to resolve.</param>
         /// <returns>Resolved technicians.</returns>
-        Task<IEnumerable<Technician>> Resolve(IEnumerable<int> ids);
+        Task<IEnumerable<Technician>> Resolve(int userId, IEnumerable<int> ids);
 
         /// <summary>
         /// Gets a technician.

@@ -28,23 +28,26 @@ namespace Service.Server.Services.Implementations
         }
 
         /// <summary>
-        /// Gets a list of technicians to which the caller has access.
+        /// Searches a list of technicians to which the caller has access.
         /// </summary>
-        /// <returns>List of ids of the technicians to which the caller has access.</returns>
-        public async Task<IEnumerable<int>> List()
+        /// <param name="userId">Id of the user performing the search.</param>
+        /// <param name="searchCriteria">Criteria by which the search should be performed.</param>
+        /// <returns>List of ids of the technicians.</returns>
+        public async Task<IEnumerable<int>> Search(int userId, TechnicianSearch searchCriteria)
         {
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT Id FROM Technician.vTechnicians";
-            var dbIds = await connection.QueryAsync<int>(sql);
+            const string storedProcedure = "Technician.Technicians_Search";
+            var dbIds = await connection.QueryAsync<int>(storedProcedure, new { searchCriteria.Name, userId }, commandType: CommandType.StoredProcedure );
             return dbIds;
         }
 
         /// <summary>
         /// Resolves a list of technicians.
         /// </summary>
+        /// <param name="userId">Id of the user requesting the technicians.</param>
         /// <param name="ids">Ids of the technicians to resolve.</param>
         /// <returns>Resolved technicians.</returns>
-        public async Task<IEnumerable<Technician>> Resolve(IEnumerable<int> ids)
+        public async Task<IEnumerable<Technician>> Resolve(int userId, IEnumerable<int> ids)
         {
             if (ids == null || !ids.Any())
             {
@@ -55,7 +58,7 @@ namespace Service.Server.Services.Implementations
 
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "Technician.Technicians_Resolve";
-            var dbTechnicians = await connection.QueryAsync<TechnicianEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbTechnicians = await connection.QueryAsync<TechnicianEntity>(storedProcedure, new { userId, ids = splitIds }, commandType: CommandType.StoredProcedure);
             var technicians = dbTechnicians.Select(MapFromDB);
             return technicians;
         }
@@ -91,6 +94,8 @@ namespace Service.Server.Services.Implementations
             var dbTechnicians = await connection.QueryAsync<TechnicianEntity>(storedProcedure, new
             {
                 technician.Name,
+                technician.PositionId,
+                technician.BusinessId,
                 technician.UserId
             }, commandType: CommandType.StoredProcedure);
             var createdTechnician = MapFromDB(dbTechnicians.FirstOrDefault());
@@ -120,7 +125,7 @@ namespace Service.Server.Services.Implementations
             {
                 technician.Id,
                 technician.Name,
-                technician.UserId
+                technician.PositionId
             }, commandType: CommandType.StoredProcedure);
             var updatedTechnician = MapFromDB(dbTechnicians.FirstOrDefault());
             return updatedTechnician;
@@ -147,6 +152,10 @@ namespace Service.Server.Services.Implementations
         {
             Id = technician.Id,
             Name = technician.Name,
+            PositionId = technician.PositionId,
+            PositionName = technician.PositionName,
+            BusinessId = technician.BusinessId,
+            BusinessName = technician.BusinessName,
             UserId = technician.UserId
         };
     }

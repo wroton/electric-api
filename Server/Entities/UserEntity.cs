@@ -25,5 +25,10 @@
         /// System administrator if there is no business.
         /// </summary>
         public int? BusinessId { get; private set; }
+
+        /// <summary>
+        /// Is the user a system administrator.
+        /// </summary>
+        public bool SystemAdministrator { get => !BusinessId.HasValue; }
     }
 }

@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
-namespace Service.Server.Configuration
+using Service.Server.Configuration;
+
+namespace Service.Server.Infrastructure
 {
     /// <summary>
     /// Sets up jwt configuration for the application.

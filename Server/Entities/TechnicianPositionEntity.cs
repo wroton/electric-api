@@ -16,7 +16,7 @@
         public string Name { get; private set; }
 
         /// <summary>
-        /// Id of the business that created the technician position.
+        /// Id of the business that owns the technician position.
         /// </summary>
         public int BusinessId { get; private set; }
     }

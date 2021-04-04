@@ -17,26 +17,44 @@ namespace Service.Server.Controllers
     [Route("api/1/technicians")]
     public class TechniciansController : BaseController
     {
+        private readonly IRequestContext _requestContext;
+        private readonly IBusinessService _businessService;
+        private readonly ITechnicianPositionService _technicianPositionService;
         private readonly ITechnicianService _technicianService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TechniciansController" /> class.
         /// </summary>
+        /// <param name="requestContext">Request context to use.</param>
+        /// <param name="businessService">Business service to use.</param>
+        /// <param name="technicianPositionService">Technician position service to use.</param>
         /// <param name="technicianService">Technician service to use.</param>
-        public TechniciansController(ITechnicianService technicianService)
+        public TechniciansController(IRequestContext requestContext, IBusinessService businessService,
+            ITechnicianPositionService technicianPositionService, ITechnicianService technicianService)
         {
+            _requestContext = requestContext ?? throw new ArgumentNullException(nameof(requestContext));
+            _businessService = businessService ?? throw new ArgumentNullException(nameof(businessService));
+            _technicianPositionService = technicianPositionService ?? throw new ArgumentNullException(nameof(technicianPositionService));
             _technicianService = technicianService ?? throw new ArgumentNullException(nameof(technicianService));
         }
 
         /// <summary>
-        /// Gets a list of technicians to which the caller has access.
+        /// Searches a list of technicians to which the caller has access.
         /// </summary>
-        /// <returns>List of ids of the technicians to which the caller has access.</returns>
-        [HttpGet]
+        /// <param name="searchCriteria">Criteria by which the search should be performed.</param>
+        /// <returns>List of ids of the technicians.</returns>
+        [HttpPost]
+        [Route("search")]
         [ProducesResponseType(typeof(IEnumerable<int>), 200)]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> Search([FromBody] TechnicianSearch searchCriteria)
         {
-            var ids = await _technicianService.List();
+            if (searchCriteria == null)
+            {
+                return BadRequest("Search criteria was not provided in the body or could not be interpreted as JSON.");
+            }
+
+            var user = await _requestContext.User();
+            var ids = await _technicianService.Search(user.Id, searchCriteria);
             return Ok(ids);
         }
 
@@ -55,7 +73,8 @@ namespace Service.Server.Controllers
                 return Ok(Array.Empty<Technician>());
             }
 
-            var technicians = await _technicianService.Resolve(ids);
+            var user = await _requestContext.User();
+            var technicians = await _technicianService.Resolve(user.Id, ids);
             return Ok(technicians);
         }
 
@@ -67,13 +86,22 @@ namespace Service.Server.Controllers
         [HttpGet]
         [Route("{id:int}")]
         [ProducesResponseType(typeof(Technician), 200)]
-        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
+            // Get the technician.
             var technician = await _technicianService.Get(id);
             if (technician == null)
             {
-                return NotFound("Tecnician could not be found.");
+                return NotFound();
+            }
+
+            // Get the user and ensure the user can access the technician.
+            var user = await _requestContext.User();
+            if (technician.BusinessId != user.BusinessId && !user.SystemAdministrator)
+            {
+                return Forbid();
             }
 
             return Ok(technician);
@@ -94,6 +122,45 @@ namespace Service.Server.Controllers
                 return BadRequest("Technician was not provided in the body or could not be interpreted as JSON.");
             }
 
+            // Get the user.
+            var user = await _requestContext.User();
+
+            // If a business id wasn't provided, use the user's business.
+            var businessId = technician.BusinessId ?? user.BusinessId;
+
+            // A business must be set.
+            if (!businessId.HasValue)
+            {
+                return BadRequest("A business id must be provided.");
+            }
+
+            // Ensure the user has access to the business.
+            if (user.BusinessId != businessId && !user.SystemAdministrator)
+            {
+                return Forbid();
+            }
+
+            // Ensure the business exists.
+            var business = await _businessService.Get(businessId.Value);
+            if (business == null)
+            {
+                return Conflict("Business specified does not exist.");
+            }
+
+            // Ensure the technician position exists.
+            var position = await _technicianPositionService.Get(technician.PositionId);
+            if (position == null)
+            {
+                return Conflict("Position specified does not exist.");
+            }
+
+            // Ensure the user has access to the position.
+            if (user.BusinessId != position.BusinessId && !user.SystemAdministrator)
+            {
+                return Forbid();
+            }
+
+            // Create the technician.
             var createdTechnician = await _technicianService.Create(technician);
             return Ok(createdTechnician);
         }
@@ -106,7 +173,9 @@ namespace Service.Server.Controllers
         [HttpPut]
         [ProducesResponseType(typeof(Technician), 200)]
         [ProducesResponseType(typeof(string), 400)]
-        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(void), 403)]
+        [ProducesResponseType(typeof(void), 404)]
+        [ProducesResponseType(typeof(string), 409)]
         public async Task<IActionResult> Put([FromBody] Technician technician)
         {
             if (technician == null)
@@ -119,10 +188,27 @@ namespace Service.Server.Controllers
                 return BadRequest("Technician id must be provided.");
             }
 
+            // Get the user.
+            var user = await _requestContext.User();
+
+            // Ensure the technician position exists.
+            var position = await _technicianPositionService.Get(technician.PositionId);
+            if (position == null)
+            {
+                return Conflict("Position specified does not exist.");
+            }
+
+            // Ensure the user has access to the position.
+            if (user.BusinessId != position.BusinessId && !user.SystemAdministrator)
+            {
+                return Forbid();
+            }
+
+            // Update the technician.
             var updatedTechnician = await _technicianService.Update(technician);
             if (updatedTechnician == null)
             {
-                return NotFound("Technician could not be found.");
+                return NotFound();
             }
 
             return Ok(updatedTechnician);
@@ -143,6 +229,13 @@ namespace Service.Server.Controllers
             if (technician == null)
             {
                 return NotFound("Technician could not be found.");
+            }
+
+            // Get the user and ensure the user can access the technician.
+            var user = await _requestContext.User();
+            if (technician.BusinessId != user.BusinessId && !user.SystemAdministrator)
+            {
+                return Forbid();
             }
 
             await _technicianService.Delete(id);

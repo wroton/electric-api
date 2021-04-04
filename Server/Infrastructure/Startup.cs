@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Text.Json.Serialization;
 
+using Service.Server.Configuration;
 using Service.Server.Services.Implementations;
 using Service.Server.Services.Interfaces;
-using Microsoft.Extensions.Logging;
 
-namespace Service.Server.Configuration
+namespace Service.Server.Infrastructure
 {
     /// <summary>
     /// Configures the application.
@@ -57,8 +58,14 @@ namespace Service.Server.Configuration
             // Allow the http context to be accessed.
             services.AddHttpContextAccessor();
 
+            // Setup MVC options.
+            var mvcBuilder = services.AddControllers(mvcOptions =>
+            {
+                mvcOptions.Filters.Add(typeof(ValidateModelAttribute));
+            });
+
             // Setup JSON options.
-            services.AddControllers().AddJsonOptions(jsonOptions =>
+            mvcBuilder.AddJsonOptions(jsonOptions =>
             {
                 jsonOptions.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             });

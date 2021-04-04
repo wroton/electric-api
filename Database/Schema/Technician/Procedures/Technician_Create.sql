@@ -1,12 +1,14 @@
 ﻿CREATE PROCEDURE Technician.Technician_Create
 	@Name NVARCHAR(100),
+	@PositionId INT,
+	@BusinessId INT,
 	@UserId INT
 AS
 
 INSERT INTO Technician.Technicians
-	([Name], UserId)
+	([Name], PositionId, BusinessId, UserId)
 VALUES
-	(@Name, @UserId);
+	(@Name, @PositionId, @BusinessId, @UserId);
 
 SELECT
 	*

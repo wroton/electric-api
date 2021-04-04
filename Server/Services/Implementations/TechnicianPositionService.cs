@@ -30,21 +30,23 @@ namespace Service.Server.Services.Implementations
         /// <summary>
         /// Gets a list of technician positions to which the caller has access.
         /// </summary>
+        /// <param name="userId">Id of the user getting the positions.</param>
         /// <returns>List of ids of the technician positions to which the caller has access.</returns>
-        public async Task<IEnumerable<int>> List()
+        public async Task<IEnumerable<int>> List(int userId)
         {
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT Id FROM Technician.vTechnicianPositions";
-            var dbIds = await connection.QueryAsync<int>(sql);
+            const string storedProcedure = "Technician.Positions_List";
+            var dbIds = await connection.QueryAsync<int>(storedProcedure, new { userId }, commandType: CommandType.StoredProcedure);
             return dbIds;
         }
 
         /// <summary>
         /// Resolves a list of technician positions.
         /// </summary>
+        /// <param name="userId">Id of the user requesting the positions.</param>
         /// <param name="ids">Ids of the technician positions to resolve.</param>
         /// <returns>Resolved technician positions.</returns>
-        public async Task<IEnumerable<TechnicianPosition>> Resolve(IEnumerable<int> ids)
+        public async Task<IEnumerable<TechnicianPosition>> Resolve(int userId, IEnumerable<int> ids)
         {
             if (ids == null || !ids.Any())
             {
@@ -54,8 +56,8 @@ namespace Service.Server.Services.Implementations
             var splitIds = string.Join(',', ids);
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Technician.TechnicianPositions_Resolve";
-            var dbTechnicianPositions = await connection.QueryAsync<TechnicianPositionEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            const string storedProcedure = "Technician.Positions_Resolve";
+            var dbTechnicianPositions = await connection.QueryAsync<TechnicianPositionEntity>(storedProcedure, new { userId, ids = splitIds }, commandType: CommandType.StoredProcedure);
             var technicianPositions = dbTechnicianPositions.Select(MapFromDB);
             return technicianPositions;
         }
@@ -68,7 +70,7 @@ namespace Service.Server.Services.Implementations
         public async Task<TechnicianPosition> Get(int id)
         {
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT * FROM Technician.vTechnicianPositions WHERE Id = @id";
+            const string sql = "SELECT * FROM Technician.vPositions WHERE Id = @id";
             var dbTechnicianPositions = await connection.QueryAsync<TechnicianPositionEntity>(sql, new { id });
             var technicianPosition = MapFromDB(dbTechnicianPositions.SingleOrDefault());
             return technicianPosition;
@@ -87,11 +89,11 @@ namespace Service.Server.Services.Implementations
             }
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Technician.vTechnicianPosition_Create";
+            const string storedProcedure = "Technician.Position_Create";
             var dbTechnicianPositions = await connection.QueryAsync<TechnicianPositionEntity>(storedProcedure, new
             {
                 technicianPosition.Name,
-                BusinessId = 0 // Assign the business id.
+                technicianPosition.BusinessId
             }, commandType: CommandType.StoredProcedure);
             var createdTechnicianPosition = MapFromDB(dbTechnicianPositions.FirstOrDefault());
             return createdTechnicianPosition;
@@ -115,7 +117,7 @@ namespace Service.Server.Services.Implementations
             }
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Technician.TechnicianPosition_Update";
+            const string storedProcedure = "Technician.Position_Update";
             var dbTechnicianPositions = await connection.QueryAsync<TechnicianPositionEntity>(storedProcedure, new
             {
                 technicianPosition.Id,
@@ -133,7 +135,7 @@ namespace Service.Server.Services.Implementations
         public async Task Delete(int id)
         {
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Client.Client_Delete";
+            const string storedProcedure = "Technician.Position_Delete";
             await connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 

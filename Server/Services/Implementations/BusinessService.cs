@@ -68,7 +68,7 @@ namespace Service.Server.Services.Implementations
         public async Task<Business> Get(int id)
         {
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT * FROM Business.vBusinesss WHERE Id = @id";
+            const string sql = "SELECT * FROM Business.vBusinesses WHERE Id = @id";
             var dbBusinesss = await connection.QueryAsync<BusinessEntity>(sql, new { id });
             var business = MapFromDB(dbBusinesss.SingleOrDefault());
             return business;

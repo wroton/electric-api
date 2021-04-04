@@ -5,5 +5,6 @@
 	[Password] NCHAR(64) NOT NULL,
 	BusinessId INT NULL,
 	CONSTRAINT [PK_User_Users] PRIMARY KEY CLUSTERED (Id),
-	INDEX [IX_User_Users_EmailAddress] NONCLUSTERED (EmailAddress)
+	INDEX [IX_User_Users_EmailAddress] NONCLUSTERED (EmailAddress),
+	CONSTRAINT [FK_User_Users_Business_Businesses_BusinessId] FOREIGN KEY (BusinessId) REFERENCES Business.Businesses (Id)
 );
