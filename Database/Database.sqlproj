@@ -152,6 +152,8 @@
     <Build Include="Schema\Administrator\Procedures\Invitation_Create.sql" />
     <Build Include="Schema\Technician\Procedures\Technicians_Search.sql" />
     <Build Include="Schema\Technician\Procedures\Positions_List.sql" />
+    <Build Include="Schema\Administrator\Procedures\Administrators_Search.sql" />
+    <Build Include="Schema\Administrator\Procedures\Administrators_List.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.publish.xml" />

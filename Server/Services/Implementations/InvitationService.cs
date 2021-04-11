@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -57,7 +58,7 @@ namespace Service.Server.Services.Implementations
                 invitation.AdministratorId,
                 invitation.InvitationToken,
                 invitation.InvitationDate
-            });
+            }, commandType: CommandType.StoredProcedure);
             var administratorInvitation = administratorInvitations.FirstOrDefault();
             return administratorInvitation;
         }
@@ -75,9 +76,9 @@ namespace Service.Server.Services.Implementations
             const string storedProcedure = "Administrator.Invitation_Accept";
             await connection.ExecuteAsync(storedProcedure, new
             {
-                AdministatorId = administratorId,
+                AdministratorId = administratorId,
                 UserId = userId
-            });
+            }, commandType: CommandType.StoredProcedure);
         }
 
         /// <summary>
@@ -107,13 +108,13 @@ namespace Service.Server.Services.Implementations
             }
 
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Technician.Invitation_Create @TechnicianId, @InvitationToken, @InvitationDate";
+            const string storedProcedure = "Technician.Invitation_Create";
             var technicianInvitations = await connection.QueryAsync<TechnicianInvitationEntity>(storedProcedure, new
             { 
                 invitation.TechnicianId,
                 invitation.InvitationToken,
                 invitation.InvitationDate
-            });
+            }, commandType: CommandType.StoredProcedure);
             var technicianInvitation = technicianInvitations.FirstOrDefault();
             return technicianInvitation;
         }
@@ -128,12 +129,12 @@ namespace Service.Server.Services.Implementations
         public async Task AcceptTechnicianInvitation(int technicianId, int userId)
         {
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "Technician.Invitation_Accept @TechnicianId, @UserId";
+            const string storedProcedure = "Technician.Invitation_Accept";
             await connection.ExecuteAsync(storedProcedure, new
             {
                 TechnicianId = technicianId,
                 UserId = userId
-            });
+            }, commandType: CommandType.StoredProcedure);
         }
     }
 }

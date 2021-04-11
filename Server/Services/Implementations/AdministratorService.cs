@@ -30,21 +30,42 @@ namespace Service.Server.Services.Implementations
         /// <summary>
         /// Gets a list of business administrators to which the caller has access.
         /// </summary>
+        /// <param name="userId">Id of the user requesting the administrator list.</param>
         /// <returns>List of ids of the business administrators to which the caller has access.</returns>
-        public async Task<IEnumerable<int>> List()
+        public async Task<IEnumerable<int>> List(int userId)
         {
             using var connection = _connectionFactory.Build();
-            const string sql = "SELECT Id FROM Administrator.vAdministrators";
-            var dbIds = await connection.QueryAsync<int>(sql);
+            const string storedProcedure = "Administrator.Administrators_List";
+            var dbIds = await connection.QueryAsync<int>(storedProcedure, new { userId }, commandType: CommandType.StoredProcedure);
+            return dbIds;
+        }
+
+        /// <summary>
+        /// Searches a list of administrators to which the caller has access.
+        /// </summary>
+        /// <param name="userId">Id of the user performing the search.</param>
+        /// <param name="searchCriteria">Criteria by which the search should be performed.</param>
+        /// <returns>List of ids of the administrators.</returns>
+        public async Task<IEnumerable<int>> Search(int userId, AdministratorSearch searchCriteria)
+        {
+            if (searchCriteria == null)
+            {
+                throw new ArgumentNullException(nameof(searchCriteria));
+            }
+
+            using var connection = _connectionFactory.Build();
+            const string storedProcedure = "Administrator.Administrators_Search";
+            var dbIds = await connection.QueryAsync<int>(storedProcedure, new { userId, name = searchCriteria.Name }, commandType: CommandType.StoredProcedure);
             return dbIds;
         }
 
         /// <summary>
         /// Resolves a list of business administrators.
         /// </summary>
+        /// <param name="userId">Id of the user resolving the administrators.</param>
         /// <param name="ids">Ids of the business administrators to resolve.</param>
         /// <returns>Resolved business administrators.</returns>
-        public async Task<IEnumerable<Administrator>> Resolve(IEnumerable<int> ids)
+        public async Task<IEnumerable<Administrator>> Resolve(int userId, IEnumerable<int> ids)
         {
             if (ids == null || !ids.Any())
             {
@@ -55,7 +76,7 @@ namespace Service.Server.Services.Implementations
 
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "Administrator.Administrators_Resolve";
-            var dbAdministrators = await connection.QueryAsync<AdministratorEntity>(storedProcedure, new { ids = splitIds }, commandType: CommandType.StoredProcedure);
+            var dbAdministrators = await connection.QueryAsync<AdministratorEntity>(storedProcedure, new { userId, ids = splitIds }, commandType: CommandType.StoredProcedure);
             var administrators = dbAdministrators.Select(MapFromDB);
             return administrators;
         }
@@ -91,8 +112,7 @@ namespace Service.Server.Services.Implementations
             var dbAdministrators = await connection.QueryAsync<AdministratorEntity>(storedProcedure, new
             {
                 administrator.Name,
-                administrator.BusinessName,
-                administrator.UserId
+                administrator.BusinessId
             }, commandType: CommandType.StoredProcedure);
             var createdAdministrator = MapFromDB(dbAdministrators.FirstOrDefault());
             return createdAdministrator;

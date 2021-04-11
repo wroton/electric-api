@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using System.Transactions;
 
 using Service.Server.Models;
 using Service.Server.Services.Interfaces;
@@ -58,16 +59,6 @@ namespace Service.Server.Controllers
         [Authorize]
         public async Task<IActionResult> SendAdministratorInvitation([FromBody] AdministratorInvitation invitation)
         {
-            if (invitation == null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(invitation);
-            }
-
             // Ensure the administrator exists.
             var administrator = await _administratorService.Get(invitation.AdministratorId);
             if (administrator == null)
@@ -100,18 +91,8 @@ namespace Service.Server.Controllers
         /// <returns>Was the invitation processed successfully.</returns>
         [Route("administrator/accept")]
         [HttpPost]
-        public async Task<IActionResult> AcceptAdministratorInvitation([FromBody] AdministratorSignup signup)
+        public async Task<IActionResult> AcceptTechnicianInvitation([FromBody] AdministratorSignup signup)
         {
-            if (signup == null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             // Extract the invitation id from the token.
             var id = _jwtService.Read(signup.InvitationToken);
             if (!id.HasValue)
@@ -120,14 +101,14 @@ namespace Service.Server.Controllers
             }
 
             // Ensure the invitation exists.
-            var administratorInvitation = await _invitationService.GetAdministratorInvitation(id.Value);
-            if (administratorInvitation == null)
+            var administrationInvitation = await _invitationService.GetAdministratorInvitation(id.Value);
+            if (administrationInvitation == null)
             {
                 return BadRequest(GENERIC_TOKEN_FAILURE);
             }
 
             // Ensure the invitation has not expired. Invitations expire after 24 hours.
-            var invitationAge = TimeProvider.Current.UtcNow - administratorInvitation.InvitationDate;
+            var invitationAge = TimeProvider.Current.UtcNow - administrationInvitation.InvitationDate;
             if (invitationAge.TotalHours > 24)
             {
                 return BadRequest(GENERIC_TOKEN_FAILURE);
@@ -145,17 +126,17 @@ namespace Service.Server.Controllers
             var user = await _userService.Get(signup.EmailAddress);
             if (user == null)
             {
-                // Hash the password.
-                var salt = _hashService.GenerateSalt();
-                var hashedPassword = _hashService.Hash(signup.Password, salt);
-
-                // Prepare the user. The user inherits the business id of the technician record.
+                // Prepare the user. The user inherits the business id of the administrator record.
                 user = new User
                 {
                     EmailAddress = signup.EmailAddress,
-                    NewPassword = hashedPassword,
+                    NewPassword = signup.Password,
                     BusinessId = administrator.BusinessId.Value
                 };
+
+                // Create the user and accept the invitation in one transaction.
+                // If the acceptance fails, the user creation will be rolled back.
+                using var transaction = new TransactionScope();
 
                 // Create the user.
                 user = await _userService.Create(user);
@@ -163,6 +144,12 @@ namespace Service.Server.Controllers
                 {
                     return StatusCode(500);
                 }
+
+                // Accept the invitation.
+                await _invitationService.AcceptAdministratorInvitation(administrator.Id.Value, user.Id.Value);
+
+                // Commit the transaction.
+                transaction.Complete();
             }
             else
             {
@@ -195,16 +182,6 @@ namespace Service.Server.Controllers
         [Authorize]
         public async Task<IActionResult> SendTechnicianInvitation([FromBody] TechnicianInvitation invitation)
         {
-            if (invitation == null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(invitation);
-            }
-
             // Ensure the technician exists.
             var technician = await _technicianService.Get(invitation.TechnicianId);
             if (technician == null)
@@ -239,16 +216,6 @@ namespace Service.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AcceptTechnicianInvitation([FromBody] TechnicianSignup signup)
         {
-            if (signup == null)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             // Extract the invitation id from the token.
             var id = _jwtService.Read(signup.InvitationToken);
             if (!id.HasValue)
@@ -282,15 +249,11 @@ namespace Service.Server.Controllers
             var user = await _userService.Get(signup.EmailAddress);
             if (user == null)
             {
-                // Hash the password.
-                var salt = _hashService.GenerateSalt();
-                var hashedPassword = _hashService.Hash(signup.Password, salt);
-
                 // Prepare the user. The user inherits the business id of the technician record.
                 user = new User
                 {
                     EmailAddress = signup.EmailAddress,
-                    NewPassword = hashedPassword,
+                    NewPassword = signup.Password,
                     BusinessId = technician.BusinessId.Value
                 };
 

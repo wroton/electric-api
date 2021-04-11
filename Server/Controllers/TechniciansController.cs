@@ -48,11 +48,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<int>), 200)]
         public async Task<IActionResult> Search([FromBody] TechnicianSearch searchCriteria)
         {
-            if (searchCriteria == null)
-            {
-                return BadRequest("Search criteria was not provided in the body or could not be interpreted as JSON.");
-            }
-
             var user = await _requestContext.User();
             var ids = await _technicianService.Search(user.Id, searchCriteria);
             return Ok(ids);
@@ -68,7 +63,7 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<Technician>), 200)]
         public async Task<IActionResult> Resolve([FromBody] IEnumerable<int> ids)
         {
-            if (ids == null || !ids.Any())
+            if (!ids.Any())
             {
                 return Ok(Array.Empty<Technician>());
             }
@@ -117,11 +112,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Post([FromBody] Technician technician)
         {
-            if (technician == null)
-            {
-                return BadRequest("Technician was not provided in the body or could not be interpreted as JSON.");
-            }
-
             // Get the user.
             var user = await _requestContext.User();
 
@@ -178,11 +168,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 409)]
         public async Task<IActionResult> Put([FromBody] Technician technician)
         {
-            if (technician == null)
-            {
-                return BadRequest("Technician was not provided in the body or could not be interpreted as JSON.");
-            }
-
             if (!technician.Id.HasValue)
             {
                 return BadRequest("Technician id must be provided.");

@@ -67,11 +67,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Post([FromBody] AuthenticationDetails authenticationDetails)
         {
-            if (authenticationDetails == null)
-            {
-                return BadRequest();
-            }
-
             // Get the user.
             var dbUser = await _userService.Get(authenticationDetails.EmailAddress);
             if (dbUser == null)

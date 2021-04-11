@@ -103,8 +103,13 @@ namespace Service.Server.Services.Implementations
 
             // Create a user.
             using var connection = _connectionFactory.Build();
-            const string storedProcedure = "[User].User_Create @EmailAddress, @Password, @BusinessId";
-            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.EmailAddress, Password = hashedPassword, user.BusinessId });
+            const string storedProcedure = "[User].User_Create";
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new
+            {
+                user.EmailAddress,
+                Password = hashedPassword,
+                user.BusinessId
+            }, commandType: CommandType.StoredProcedure);
             var createdUser = MapFromDB(dbUsers.FirstOrDefault());
             return createdUser;
         }
@@ -128,7 +133,12 @@ namespace Service.Server.Services.Implementations
             // Create a user.
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Update";
-            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new { user.Id, user.EmailAddress, Password = hashedPassword });
+            var dbUsers = await connection.QueryAsync<UserEntity>(storedProcedure, new
+            {
+                user.Id,
+                user.EmailAddress,
+                Password = hashedPassword
+            }, commandType: CommandType.StoredProcedure);
             var updatedUser = MapFromDB(dbUsers.FirstOrDefault());
             return updatedUser;
         }
@@ -143,7 +153,7 @@ namespace Service.Server.Services.Implementations
             // Delete the user.
             using var connection = _connectionFactory.Build();
             const string storedProcedure = "[User].User_Delete";
-            await connection.ExecuteAsync(storedProcedure, new { Id = id });
+            await connection.ExecuteAsync(storedProcedure, new { Id = id }, commandType: CommandType.StoredProcedure);
         }
 
         /// <summary>

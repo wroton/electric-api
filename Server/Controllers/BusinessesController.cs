@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Service.Server.Models;
@@ -50,11 +49,10 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<Business>), 200)]
         public async Task<IActionResult> Resolve([FromBody] IEnumerable<int> ids)
         {
-            if (ids == null || !ids.Any())
+            if (!ids.Any())
             {
                 return Ok(Array.Empty<Business>());
             }
-
             var businesses = await _businessService.Resolve(ids);
             return Ok(businesses);
         }
@@ -89,11 +87,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Post([FromBody] Business business)
         {
-            if (business == null)
-            {
-                return BadRequest("Business was not provided in the body or could not be interpreted as JSON.");
-            }
-
             var createdBusiness = await _businessService.Create(business);
             return Ok(createdBusiness);
         }
@@ -109,11 +102,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Put([FromBody] Business business)
         {
-            if (business == null)
-            {
-                return BadRequest("Business was not provided in the body or could not be interpreted as JSON.");
-            }
-
             if (!business.Id.HasValue)
             {
                 return BadRequest("Business id must be provided.");

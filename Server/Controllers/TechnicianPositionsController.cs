@@ -57,7 +57,7 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<TechnicianPosition>), 200)]
         public async Task<IActionResult> Resolve([FromBody] IEnumerable<int> ids)
         {
-            if (ids == null || !ids.Any())
+            if (!ids.Any())
             {
                 return Ok(Array.Empty<TechnicianPosition>());
             }
@@ -105,11 +105,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Post([FromBody] TechnicianPosition technicianPosition)
         {
-            if (technicianPosition == null)
-            {
-                return BadRequest("Technician position was not provided in the body or could not be interpreted as JSON.");
-            }
-
             // Get the user.
             var user = await _requestContext.User();
 
@@ -151,11 +146,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Put([FromBody] TechnicianPosition technicianPosition)
         {
-            if (technicianPosition == null)
-            {
-                return BadRequest("Technician position was not provided in the body or could not be interpreted as JSON.");
-            }
-
             if (!technicianPosition.Id.HasValue)
             {
                 return BadRequest("Technician position id must be provided.");

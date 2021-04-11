@@ -50,7 +50,7 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<Job>), 200)]
         public async Task<IActionResult> Resolve([FromBody] IEnumerable<int> ids)
         {
-            if (ids == null || !ids.Any())
+            if (!ids.Any())
             {
                 return Ok(Array.Empty<Job>());
             }
@@ -89,11 +89,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Post([FromBody] Job job)
         {
-            if (job == null)
-            {
-                return BadRequest("Job was not provided in the body or could not be interpreted as JSON.");
-            }
-
             var createdJob = await _jobService.Create(job);
             return Ok(createdJob);
         }
@@ -109,11 +104,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Put([FromBody] Job job)
         {
-            if (job == null)
-            {
-                return BadRequest("Job was not provided in the body or could not be interpreted as JSON.");
-            }
-
             if (!job.Id.HasValue)
             {
                 return BadRequest("Job id must be provided.");

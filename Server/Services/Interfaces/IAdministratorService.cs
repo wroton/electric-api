@@ -13,15 +13,25 @@ namespace Service.Server.Services.Interfaces
         /// <summary>
         /// Gets a list of business administrators to which the caller has access.
         /// </summary>
+        /// <param name="userId">Id of the user requesting the administrator list.</param>
         /// <returns>List of ids of the business administrators to which the caller has access.</returns>
-        public Task<IEnumerable<int>> List();
+        public Task<IEnumerable<int>> List(int userId);
+
+        /// <summary>
+        /// Searches a list of administrators to which the caller has access.
+        /// </summary>
+        /// <param name="userId">Id of the user performing the search.</param>
+        /// <param name="searchCriteria">Criteria by which the search should be performed.</param>
+        /// <returns>List of ids of the administrators.</returns>
+        Task<IEnumerable<int>> Search(int userId, AdministratorSearch searchCriteria);
 
         /// <summary>
         /// Resolves a list of business administrators.
         /// </summary>
+        /// <param name="userId">Id of the user resolving the administrators.</param>
         /// <param name="ids">Ids of the business administrators to resolve.</param>
         /// <returns>Resolved business administrators.</returns>
-        public Task<IEnumerable<Administrator>> Resolve(IEnumerable<int> ids);
+        public Task<IEnumerable<Administrator>> Resolve(int userId, IEnumerable<int> ids);
 
         /// <summary>
         /// Gets a business administrator.

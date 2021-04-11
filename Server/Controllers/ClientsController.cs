@@ -50,7 +50,7 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<Client>), 200)]
         public async Task<IActionResult> Resolve([FromBody] IEnumerable<int> ids)
         {
-            if (ids == null || !ids.Any())
+            if (!ids.Any())
             {
                 return Ok(Array.Empty<Client>());
             }
@@ -89,11 +89,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> Post([FromBody] Client client)
         {
-            if (client == null)
-            {
-                return BadRequest("Client was not provided in the body or could not be interpreted as JSON.");
-            }
-
             var createdClient = await _clientService.Create(client);
             return Ok(createdClient);
         }
@@ -109,11 +104,6 @@ namespace Service.Server.Controllers
         [ProducesResponseType(typeof(string), 404)]
         public async Task<IActionResult> Put([FromBody] Client client)
         {
-            if (client == null)
-            {
-                return BadRequest("Client was not provided in the body or could not be interpreted as JSON.");
-            }
-
             if (!client.Id.HasValue)
             {
                 return BadRequest("Client id must be provided.");

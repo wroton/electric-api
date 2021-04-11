@@ -1,13 +1,12 @@
 ﻿CREATE PROCEDURE Administrator.Administrator_Create
 	@Name NVARCHAR(200),
-	@BusinessId INT,
-	@UserId INT
+	@BusinessId INT
 AS
 
 INSERT INTO Administrator.Administrators
-	([Name], BusinessId, UserId)
+	([Name], BusinessId)
 VALUES
-	(@Name, @BusinessId, @UserId);
+	(@Name, @BusinessId);
 
 SELECT
 	*
