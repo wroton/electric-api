@@ -156,9 +156,6 @@ namespace Service.Server.Controllers
                 return BadRequest("Administrator id must be provided.");
             }
 
-            // Get the user.
-            var user = await _requestContext.User();
-
             // Update the administrator.
             var updatedAdministrator = await _administratorService.Update(administrator);
             if (updatedAdministrator == null)
