@@ -35,6 +35,19 @@ namespace Service.Server.Controllers
         }
 
         /// <summary>
+        /// Gets the list of administrators to which the caller has access.
+        /// </summary>
+        /// <returns>List of ids of the administrators.</returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<int>), 200)]
+        public async Task<IActionResult> List()
+        {
+            var user = await _requestContext.User();
+            var ids = await _administratorService.List(user.Id);
+            return Ok(ids);
+        }
+
+        /// <summary>
         /// Searches a list of administrators to which the caller has access.
         /// </summary>
         /// <param name="searchCriteria">Criteria by which the search should be performed.</param>
