@@ -120,9 +120,10 @@ namespace Service.Server.Infrastructure
             // Enable CORS.
             applicationBuilder.UseCors(policy =>
             {
-                policy.AllowAnyOrigin();
+                policy.SetIsOriginAllowed(x => true);
                 policy.AllowAnyMethod();
                 policy.AllowAnyHeader();
+                policy.AllowCredentials();
             });
 
             // Setup settings for all environments.
