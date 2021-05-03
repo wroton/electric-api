@@ -121,6 +121,7 @@ namespace Service.Server.Infrastructure
             applicationBuilder.UseCors(policy =>
             {
                 policy.SetIsOriginAllowed(x => true);
+                policy.WithOrigins("http://localhost:8080");
                 policy.AllowAnyMethod();
                 policy.AllowAnyHeader();
                 policy.AllowCredentials();

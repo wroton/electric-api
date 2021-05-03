@@ -29,6 +29,7 @@ namespace Service.Server.Models
         /// <summary>
         /// Address line 1 of the business' location.
         /// </summary>
+        [MinLength(1)]
         [MaxLength(150)]
         public string AddressLine2 { get; set; }
 

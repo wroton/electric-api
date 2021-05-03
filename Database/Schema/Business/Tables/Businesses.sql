@@ -10,7 +10,7 @@
 	CONSTRAINT [PK_Business_Businesses] PRIMARY KEY CLUSTERED (Id),
 	CONSTRAINT [CK_Business_Businesses_Name] CHECK (LTRIM(RTRIM([Name])) != ''),
 	CONSTRAINT [CK_Business_Businesses_AddressLine1IsPopulated] CHECK (LTRIM(RTRIM(AddressLine1)) != ''),
-	CONSTRAINT [CK_Business_Businesses_AddressLine2IsPopulated] CHECK (LTRIM(RTRIM(AddressLine2)) != ''),
+	CONSTRAINT [CK_Business_Businesses_AddressLine2IsPopulated] CHECK (AddressLine2 IS NULL OR LTRIM(RTRIM(AddressLine2)) != ''),
 	CONSTRAINT [CK_Business_Businesses_CityIsPopulated] CHECK(LTRIM(RTRIM(City)) != ''),
 	CONSTRAINT [CK_Business_Businesses_StateIsPopulated] CHECK(LTRIM(RTRIM([State])) != ''),
 	CONSTRAINT [CK_Business_Businesses_ZipCodeIsPopulated] CHECK(LTRIM(RTRIM(ZipCode)) != '')
