@@ -26,7 +26,7 @@ namespace Service.Server.Services.Implementations
                 throw new ArgumentNullException(nameof(options));
             }
 
-            _settings = options.Value ?? throw new ArgumentException("Cannot have a null value.", nameof(options)); ;
+            _settings = options.Value ?? throw new ArgumentException("Cannot have a null value.", nameof(options));
         }
 
         /// <summary>
