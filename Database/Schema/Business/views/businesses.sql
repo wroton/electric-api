@@ -1,4 +1,4 @@
-CREATE VIEW business.v_businesses
+CREATE OR REPLACE VIEW business.v_businesses
 AS
 
 SELECT

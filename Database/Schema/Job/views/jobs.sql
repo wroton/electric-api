@@ -1,4 +1,4 @@
-CREATE VIEW job.v_jobs
+CREATE OR REPLACE VIEW job.v_jobs
 AS
 
 SELECT

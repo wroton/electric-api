@@ -1,4 +1,4 @@
-CREATE VIEW administrator.v_administrators
+CREATE OR REPLACE VIEW administrator.v_administrators
 AS
 
 SELECT

@@ -1,4 +1,4 @@
-CREATE VIEW administrator.v_invitations
+CREATE OR REPLACE VIEW administrator.v_invitations
 AS
 
 SELECT

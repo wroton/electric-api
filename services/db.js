@@ -9,12 +9,12 @@ async function query(query, parameters) {
 
 async function queryFunc(func, parameters) {
   const sql = "SELECT * FROM " + func;
-  const rows = await query(sql, parameters);
+  return await query(sql, parameters);
 }
 
 async function call(func, parameters) {
   const sql = "CALL " + func;
-  await query(sql, parameters);
+  return await query(sql, parameters);
 }
 
 module.exports = {

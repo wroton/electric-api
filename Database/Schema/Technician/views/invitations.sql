@@ -1,4 +1,4 @@
-CREATE VIEW technician.v_invitations
+CREATE OR REPLACE VIEW technician.v_invitations
 AS
 
 SELECT

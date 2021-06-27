@@ -1,4 +1,4 @@
-CREATE VIEW "user".v_users
+CREATE OR REPLACE VIEW "user".v_users
 AS
 
 SELECT

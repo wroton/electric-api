@@ -1,8 +1,8 @@
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const config = require("./config");
+const cors = require("cors");
 const express = require("express");
-const jwt = require("jsonwebtoken");
-const utils = require("./utils.js");
+const securer = require("./services/securer");
 
 // Routes.
 const administratorsRouter = require("./routes/administrators");
@@ -13,11 +13,6 @@ const techniciansRouter = require("./routes/technicians");
 const tokensRouter = require("./routes/tokens");
 const usersRouter = require("./routes/users");
 
-// Settings.
-const PORT = 3000;
-const HOST = "0.0.0.0";
-const DBSERVER = "";
-
 // Setup the Express instance.
 const app = express();
 
@@ -26,6 +21,13 @@ app.use(express.urlencoded({
 }));
 
 app.use(express.json());
+
+// CORS.
+app.use(cors({
+  credentials: true,
+  origin: "*"
+}));
+app.options("*", cors());
 
 // Always determine the current time in UTC.
 app.use(function (req, res, next) {
@@ -39,20 +41,32 @@ app.use(function (req, res, next) {
   next();
 });
 
-// Setup routes.
-app.use("/administrators", administratorsRouter);
-app.use("/businesses", businessesRouter);
-app.use("/clients", clientsRouter);
-app.use("/jobs", jobsRouter);
-app.use("/technicians", techniciansRouter);
-app.use("/tokens", tokensRouter);
-app.use("/users", usersRouter);
+// Skip auth on some routes.
+app.use(function (req, res, next) {
+  req.skipAuth = req.url === "/api/1/tokens";
+  next();
+});
 
-app.listen(PORT, HOST, err => {
+// Setup anonymous routes.
+app.use("/api/1/tokens", tokensRouter);
+
+// Setup token checking.
+app.use(cookieParser());
+app.use(securer);
+
+// Setup authorized routes.
+app.use("/api/1/administrators", administratorsRouter);
+app.use("/api/1/businesses", businessesRouter);
+app.use("/api/1/clients", clientsRouter);
+app.use("/api/1/jobs", jobsRouter);
+app.use("/api/1/technicians", techniciansRouter);
+app.use("/api/1/users", usersRouter);
+
+app.listen(config.app.port, config.app.host, err => {
   if (err) {
     console.log(err);
     return;
   }
 
-  console.log("Listening on port " + PORT + ".");
+  console.log("Listening on port " + config.app.port + ".");
 });

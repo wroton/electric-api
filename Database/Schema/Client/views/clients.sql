@@ -1,4 +1,4 @@
-CREATE VIEW client.v_clients
+CREATE OR REPLACE VIEW client.v_clients
 AS
 
 SELECT
